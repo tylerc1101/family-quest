@@ -62,7 +62,7 @@
       {% for hero in heroes %}
       <div class="war-hero {% if hero.is_knocked_out %}is-ko{% endif %}">
         <div class="war-hero-sprite" style="--hero-color: {{ hero.color }};">
-          {{ hero_svg(hero.class, hero.color, 44) }}
+          {{ hero_svg(hero.class, hero.color, 64) }}
         </div>
         <div class="war-hero-name">{{ hero.name }}</div>
       </div>
