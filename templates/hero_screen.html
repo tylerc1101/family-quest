@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+{% from "macros/svgs.html" import hero_svg %}
+
+{% block title %}{{ hero.name }} — Family Quest{% endblock %}
+
+{% block body_class %}hero-screen{% endblock %}
+
+{% block content %}
+<div class="hero-screen-wrap">
+
+  {# ── Flash message ── #}
+  {% if msg %}
+    <div class="flash flash-{{ 'success' if 'complete' in msg.lower() else 'info' }}">
+      {{ msg }}
+    </div>
+  {% endif %}
+
+  {# ── Hero header ── #}
+  <header class="hs-header" style="--hero-color: {{ hero.color }}">
+    <a href="/" class="btn btn-ghost btn-sm">← Back to War Room</a>
+
+    <div class="hs-identity">
+      <div class="hs-portrait">
+        {{ hero_svg(hero.hero_class, hero.color, 96) }}
+      </div>
+      <div class="hs-info">
+        <h1 class="hs-name">{{ hero.name }}</h1>
+        <div class="hs-meta">
+          <span class="badge badge-class">{{ hero.hero_class | title }}</span>
+          <span class="badge badge-level">Lv {{ hero.level }}</span>
+          {% if hero.is_knocked_out %}
+            <span class="badge badge-ko">⚡ KNOCKED OUT</span>
+          {% endif %}
+        </div>
+
+        <div class="hs-bars">
+          {# HP bar #}
+          {% set hp_pct = ((hero.current_hp / hero.max_hp) * 100) | round(1) %}
+          {% set hp_cls = 'bar-danger' if hp_pct < 25 else ('bar-warn' if hp_pct < 60 else 'bar-safe') %}
+          <div class="stat-row">
+            <span class="stat-label">❤️ HP</span>
+            <div class="bar-track">
+              <div class="bar-fill {{ hp_cls }}" style="width: {{ hp_pct }}%"></div>
+            </div>
+            <span class="stat-value">{{ hero.current_hp }}/{{ hero.max_hp }}</span>
+          </div>
+
+          {# XP bar #}
+          <div class="stat-row">
+            <span class="stat-label">✨ XP</span>
+            <div class="bar-track">
+              <div class="bar-fill bar-xp" style="width: {{ xp_pct }}%"></div>
+            </div>
+            <span class="stat-value">{{ xp_to_next }} to next</span>
+          </div>
+        </div>
+
+        <div class="hs-currency">
+          <span class="currency-chip">⚔️ {{ hero.xp }} XP earned</span>
+          <span class="currency-chip">🪙 {{ hero.coins }} coins</span>
+          <span class="currency-chip">⭐ {{ hero.xp }} XP total</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  {# ── Class passive callout ── #}
+  {% set passives = {
+    'warrior': ('⚔️', 'Boss Slayer', 'Deals +25% boss damage on every hit.'),
+    'mage':    ('🔮', 'Arcane Mind', 'Earns +30% bonus XP on every task.'),
+    'rogue':   ('🗡️', 'Treasure Hunter', 'Earns +50% bonus coins on every task.'),
+    'healer':  ('💚', 'Team Medic', 'Heals the party 3 HP on task completion.'),
+    'ranger':  ('🏹', 'Eagle Eye', '20% chance to deal double boss damage.'),
+  } %}
+  {% if hero.hero_class in passives %}
+    {% set icon, pname, pdesc = passives[hero.hero_class] %}
+    <div class="passive-banner" style="border-color: {{ hero.color }}">
+      <span class="passive-icon">{{ icon }}</span>
+      <div>
+        <strong>{{ pname }}</strong> — {{ pdesc }}
+      </div>
+    </div>
+  {% endif %}
+
+  {# ── KO overlay ── #}
+  {% if hero.is_knocked_out %}
+    <div class="ko-banner">
+      <span class="ko-icon">😵</span>
+      <div>
+        <strong>{{ hero.name }} is knocked out!</strong>
+        <p>You can still complete tasks, but rewards are paused until you recover.</p>
+        {% if hero.knockout_until %}
+          <p class="ko-timer">Recovery in progress… check back soon.</p>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# ── Tasks section ── #}
+  <section class="hs-tasks">
+    <h2 class="section-title">📋 Today's Quests</h2>
+
+    {% set pending_tasks  = tasks | selectattr('state', 'eq', 'pending')   | list %}
+    {% set done_tasks     = tasks | selectattr('state', 'eq', 'completed') | list %}
+    {% set approved_tasks = tasks | selectattr('state', 'eq', 'approved')  | list %}
+    {% set missed_tasks   = tasks | selectattr('state', 'eq', 'missed')    | list %}
+
+    {% if not tasks %}
+      <div class="empty-state">
+        <p>🌟 No quests assigned for today. Check back tomorrow!</p>
+      </div>
+
+    {% else %}
+
+      {# Pending tasks — actionable #}
+      {% if pending_tasks %}
+        <div class="task-group">
+          <h3 class="task-group-label">⏳ Active Quests</h3>
+          <div class="task-list">
+            {% for task in pending_tasks %}
+              <div class="task-card task-pending">
+                <div class="task-info">
+                  <span class="task-name">{{ task.title }}</span>
+                  <div class="task-rewards">
+                    <span class="badge badge-{{ task.difficulty }}">{{ task.difficulty | title }}</span>
+                    <span class="reward-chip">+{{ task.xp_reward }} XP</span>
+                    <span class="reward-chip">+{{ task.coin_reward }} 🪙</span>
+                    <span class="reward-chip">{{ task.boss_damage }} ⚔️</span>
+                  </div>
+                  {% if task.description %}
+                    <p class="task-desc">{{ task.description }}</p>
+                  {% endif %}
+                </div>
+                <form method="POST" action="/hero/{{ hero.id }}/task/{{ task.id }}/complete"
+                      onsubmit="return confirm('Mark \'{{ task.title }}\' as complete?')">
+                  <button class="btn btn-primary btn-complete" {% if hero.is_knocked_out %}title="You're KO'd — task will complete but rewards are paused"{% endif %}>
+                    ✅ Complete
+                  </button>
+                </form>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {# Awaiting approval #}
+      {% if done_tasks %}
+        <div class="task-group">
+          <h3 class="task-group-label">🔍 Awaiting Approval</h3>
+          <div class="task-list">
+            {% for task in done_tasks %}
+              <div class="task-card task-completed">
+                <div class="task-info">
+                  <span class="task-name">{{ task.title }}</span>
+                  <div class="task-rewards">
+                    <span class="badge badge-{{ task.difficulty }}">{{ task.difficulty | title }}</span>
+                    <span class="reward-chip muted">+{{ task.xp_reward }} XP</span>
+                    <span class="reward-chip muted">+{{ task.coin_reward }} 🪙</span>
+                  </div>
+                </div>
+                <span class="task-status-badge">⏳ Pending Review</span>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {# Approved #}
+      {% if approved_tasks %}
+        <div class="task-group">
+          <h3 class="task-group-label">✅ Completed</h3>
+          <div class="task-list">
+            {% for task in approved_tasks %}
+              <div class="task-card task-approved">
+                <div class="task-info">
+                  <span class="task-name">{{ task.title }}</span>
+                  <span class="badge badge-{{ task.difficulty }}">{{ task.difficulty | title }}</span>
+                </div>
+                <span class="task-status-badge success">✅ Approved!</span>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {# Missed #}
+      {% if missed_tasks %}
+        <div class="task-group">
+          <h3 class="task-group-label">💀 Missed</h3>
+          <div class="task-list">
+            {% for task in missed_tasks %}
+              <div class="task-card task-missed">
+                <div class="task-info">
+                  <span class="task-name">{{ task.title }}</span>
+                  <span class="task-miss-note">-{{ task.miss_damage }} HP penalty</span>
+                </div>
+                <span class="task-status-badge danger">❌ Missed</span>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+    {% endif %}
+  </section>
+
+</div>
+{% endblock %}

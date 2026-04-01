@@ -1,0 +1,113 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Templates{% endblock %}
+{% block page_title %}📝 Task Templates{% endblock %}
+
+{% set admin_page = 'templates' %}
+
+{% block admin_content %}
+
+<div class="admin-two-col">
+
+  {# ── Create Template ── #}
+  <section class="admin-section">
+    <h2 class="section-title">➕ New Task Template</h2>
+    <p class="section-desc">Templates define repeatable daily tasks. Each day they generate fresh task instances for assigned heroes.</p>
+
+    <form method="POST" action="/admin/templates" class="admin-form">
+
+      <div class="form-group">
+        <label for="name">Task Name</label>
+        <input type="text" id="name" name="name" placeholder="e.g. Make your bed, Load the dishwasher" required maxlength="60">
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description <span class="label-optional">(optional)</span></label>
+        <input type="text" id="description" name="description" placeholder="Extra details for the hero" maxlength="120">
+      </div>
+
+      <div class="form-group">
+        <label for="hero_id">Assign to Hero</label>
+        <select id="hero_id" name="hero_id" required>
+          <option value="">— select hero —</option>
+          {% for hero in heroes %}
+            <option value="{{ hero.id }}">{{ hero.name }} ({{ hero.hero_class | title }})</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="difficulty">Difficulty</label>
+        <select id="difficulty" name="difficulty" required>
+          <option value="easy">🟢 Easy — small XP, minor boss hit</option>
+          <option value="medium" selected>🟡 Medium — solid rewards</option>
+          <option value="hard">🟠 Hard — great rewards, big boss damage</option>
+          <option value="epic">🔴 Epic — massive rewards, boss nuke</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" name="is_active" value="1" checked>
+          Active (generates daily tasks)
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-primary">📝 Create Template</button>
+    </form>
+  </section>
+
+  {# ── Template List ── #}
+  <section class="admin-section">
+    <h2 class="section-title">Existing Templates</h2>
+
+    {% if templates %}
+      {# Group by hero #}
+      {% set seen_heroes = [] %}
+      {% for hero in heroes %}
+        {% set hero_templates = templates | selectattr('hero_id', 'eq', hero.id) | list %}
+        {% if hero_templates %}
+          <div class="template-hero-group">
+            <h3 class="template-hero-label" style="color:{{ hero.color }}">
+              {{ hero.name }}
+              <span class="badge badge-class">{{ hero.hero_class | title }}</span>
+            </h3>
+            <div class="template-list">
+              {% for tmpl in hero_templates %}
+                <div class="template-card {% if not tmpl.is_active %}template-inactive{% endif %}">
+                  <div class="template-info">
+                    <span class="template-name">{{ tmpl.title }}</span>
+                    <div class="template-meta">
+                      <span class="badge badge-{{ tmpl.difficulty }}">{{ tmpl.difficulty | title }}</span>
+                      {% if not tmpl.is_active %}
+                        <span class="badge badge-inactive">Inactive</span>
+                      {% endif %}
+                    </div>
+                    {% if tmpl.description %}
+                      <span class="template-desc">{{ tmpl.description }}</span>
+                    {% endif %}
+                  </div>
+                  <div class="template-actions">
+                    <form method="POST" action="/admin/templates/{{ tmpl.id }}/toggle">
+                      <button class="btn btn-ghost btn-sm">
+                        {% if tmpl.is_active %}⏸ Pause{% else %}▶️ Activate{% endif %}
+                      </button>
+                    </form>
+                    <form method="POST" action="/admin/templates/{{ tmpl.id }}/delete"
+                          onsubmit="return confirm('Delete template \'{{ tmpl.title }}\'?')">
+                      <button class="btn btn-danger btn-sm">🗑️</button>
+                    </form>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">No templates yet — create some tasks for your heroes!</div>
+    {% endif %}
+  </section>
+
+</div>
+{% endblock %}

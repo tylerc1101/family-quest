@@ -1,0 +1,30 @@
+{% if events %}
+  {% for ev in events %}
+    <div class="event-entry event-{{ ev.event_type }} slide-in">
+      <div class="event-icon">
+        {% if ev.event_type == 'task_approved' %}⚔️
+        {% elif ev.event_type == 'task_completed' %}📋
+        {% elif ev.event_type == 'task_missed' %}💀
+        {% elif ev.event_type == 'level_up' %}⭐
+        {% elif ev.event_type == 'boss_damaged' %}💥
+        {% elif ev.event_type == 'boss_defeated' %}🏆
+        {% elif ev.event_type == 'hero_ko' %}😵
+        {% elif ev.event_type == 'hero_recovered' %}💊
+        {% elif ev.event_type == 'reward_claimed' %}🎁
+        {% elif ev.event_type == 'party_heal' %}✨
+        {% elif ev.event_type == 'crit' %}💢
+        {% else %}📜
+        {% endif %}
+      </div>
+      <div class="event-body">
+        <span class="event-message">{{ ev.message }}</span>
+        <span class="event-time" data-timestamp="{{ ev.created_at }}">{{ ev.created_at }}</span>
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <div class="event-empty">
+    <span class="event-icon">📜</span>
+    <p>The adventure begins…</p>
+  </div>
+{% endif %}

@@ -1,0 +1,141 @@
+{% extends "admin/base_admin.html" %}
+{% from "macros/svgs.html" import hero_svg %}
+
+{% block admin_title %}Overview{% endblock %}
+{% block page_title %}⚔️ War Room Overview{% endblock %}
+
+{% set admin_page = 'overview' %}
+
+{% block admin_content %}
+
+{# ── Quick Stats ── #}
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-number">{{ heroes | length }}</div>
+    <div class="stat-label">Heroes</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">{{ pending_tasks | length }}</div>
+    <div class="stat-label">Awaiting Approval</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">
+      {% if boss %}{{ boss.current_hp }}/{{ boss.max_hp }}{% else %}—{% endif %}
+    </div>
+    <div class="stat-label">Boss HP</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">{{ ko_count }}</div>
+    <div class="stat-label">KO'd Heroes</div>
+  </div>
+</div>
+
+{# ── Pending Approvals ── #}
+<section class="admin-section">
+  <h2 class="section-title">🔍 Pending Approvals</h2>
+  {% if pending_tasks %}
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Hero</th>
+          <th>Task</th>
+          <th>Difficulty</th>
+          <th>Rewards</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in pending_tasks %}
+          <tr>
+            <td>
+              <div class="table-hero-cell">
+                <span class="mini-portrait">
+                  {{ hero_svg(task.hero_class, task.hero_color, 32) }}
+                </span>
+                {{ task.hero_name }}
+              </div>
+            </td>
+            <td>{{ task.title }}</td>
+            <td><span class="badge badge-{{ task.difficulty }}">{{ task.difficulty | title }}</span></td>
+            <td>
+              <span class="reward-chip">+{{ task.xp_reward }} XP</span>
+              <span class="reward-chip">+{{ task.coin_reward }} 🪙</span>
+              <span class="reward-chip">{{ task.boss_damage }} ⚔️</span>
+            </td>
+            <td>
+              <div class="action-row">
+                <form method="POST" action="/admin/tasks/{{ task.id }}/approve" style="display:inline">
+                  <button class="btn btn-success btn-sm">✅ Approve</button>
+                </form>
+                <form method="POST" action="/admin/tasks/{{ task.id }}/reject" style="display:inline">
+                  <button class="btn btn-danger btn-sm">❌ Reject</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="empty-state">No tasks awaiting approval. 🎉</div>
+  {% endif %}
+</section>
+
+{# ── Hero Status ── #}
+<section class="admin-section">
+  <h2 class="section-title">🧙 Hero Status</h2>
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Hero</th><th>Class</th><th>Level</th><th>HP</th><th>Status</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for hero in heroes %}
+        {% set hp_pct = ((hero.current_hp / hero.max_hp) * 100) | round %}
+        <tr class="{% if hero.is_knocked_out %}row-danger{% endif %}">
+          <td>
+            <div class="table-hero-cell">
+              <span class="mini-portrait">{{ hero_svg(hero.hero_class, hero.color, 32) }}</span>
+              <a href="/hero/{{ hero.id }}">{{ hero.name }}</a>
+            </div>
+          </td>
+          <td>{{ hero.hero_class | title }}</td>
+          <td>{{ hero.level }}</td>
+          <td>
+            <div class="inline-bar">
+              <div class="bar-track slim">
+                <div class="bar-fill {% if hp_pct < 25 %}bar-danger{% elif hp_pct < 60 %}bar-warn{% else %}bar-safe{% endif %}"
+                     style="width:{{ hp_pct }}%"></div>
+              </div>
+              <span class="bar-label">{{ hero.current_hp }}/{{ hero.max_hp }}</span>
+            </div>
+          </td>
+          <td>
+            {% if hero.is_knocked_out %}
+              <span class="badge badge-ko">KO'd</span>
+            {% else %}
+              <span class="badge badge-active">Active</span>
+            {% endif %}
+          </td>
+          <td>
+            <form method="POST" action="/admin/heroes/{{ hero.id }}/heal" style="display:inline">
+              <button class="btn btn-ghost btn-sm">💊 Full Heal</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+{# ── End of Day ── #}
+<section class="admin-section admin-section-danger">
+  <h2 class="section-title">⚙️ End of Day</h2>
+  <p>Marks all remaining pending tasks as missed and applies HP penalties. Run this each evening.</p>
+  <form method="POST" action="/admin/end-of-day" onsubmit="return confirm('Run end-of-day processing? This cannot be undone.')">
+    <button class="btn btn-danger">🌙 Run End of Day</button>
+  </form>
+</section>
+
+{% endblock %}

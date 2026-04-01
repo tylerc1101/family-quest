@@ -1,0 +1,600 @@
+{# macros/svgs.html — All character SVG art as Jinja2 macros.
+   Heroes face RIGHT (toward boss). Boss faces LEFT (toward heroes).
+   The color parameter is the hero's hex color (#rrggbb).
+   Usage: {% from "macros/svgs.html" import hero_svg, boss_svg %} #}
+
+{% macro hero_svg(hero_class, color, size=60) %}
+  {% set c = color %}
+  {% set dark = "rgba(0,0,0,0.35)" %}
+  {% if hero_class == "warrior" %}
+    {{ _warrior(c, dark, size) }}
+  {% elif hero_class == "mage" %}
+    {{ _mage(c, dark, size) }}
+  {% elif hero_class == "rogue" %}
+    {{ _rogue(c, dark, size) }}
+  {% elif hero_class == "healer" %}
+    {{ _healer(c, dark, size) }}
+  {% elif hero_class == "ranger" %}
+    {{ _ranger(c, dark, size) }}
+  {% else %}
+    {{ _warrior(c, dark, size) }}
+  {% endif %}
+{% endmacro %}
+
+{# ── Warrior ─────────────────────────────────────────────────────────────── #}
+{% macro _warrior(c, dark, size) %}
+<svg width="{{ size }}" height="{{ size * 1.35 | int }}" viewBox="0 0 60 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shadow -->
+  <ellipse cx="30" cy="77" rx="16" ry="4" fill="rgba(0,0,0,0.35)"/>
+  <!-- Legs -->
+  <rect x="16" y="53" width="11" height="20" rx="4" fill="{{ c }}" opacity="0.85"/>
+  <rect x="33" y="53" width="11" height="20" rx="4" fill="{{ c }}" opacity="0.85"/>
+  <!-- Boots -->
+  <rect x="14" y="67" width="14" height="8" rx="3" fill="#2a1a0a"/>
+  <rect x="32" y="67" width="14" height="8" rx="3" fill="#2a1a0a"/>
+  <!-- Body/Chestplate -->
+  <rect x="14" y="26" width="32" height="30" rx="6" fill="{{ c }}"/>
+  <!-- Armor details -->
+  <rect x="20" y="30" width="20" height="18" rx="4" fill="rgba(255,255,255,0.12)"/>
+  <rect x="24" y="32" width="12" height="2" rx="1" fill="rgba(255,255,255,0.3)"/>
+  <!-- Shield (left side, arm raised) -->
+  <ellipse cx="8" cy="40" rx="8" ry="11" fill="#4a4a6a"/>
+  <ellipse cx="8" cy="40" rx="5" ry="8" fill="#6a6aaa"/>
+  <circle cx="8" cy="40" r="2" fill="#fbbf24"/>
+  <!-- Sword arm (right) -->
+  <rect x="46" y="20" width="6" height="28" rx="3" fill="#aab4c8"/>
+  <rect x="43" y="18" width="12" height="4" rx="2" fill="#8a8a6a"/>
+  <rect x="47" y="14" width="4" height="8" rx="2" fill="#e0e0f0"/>
+  <!-- Neck -->
+  <rect x="24" y="21" width="12" height="8" rx="4" fill="{{ c }}"/>
+  <!-- Head -->
+  <ellipse cx="30" cy="16" rx="12" ry="11" fill="{{ c }}"/>
+  <!-- Helmet -->
+  <path d="M18 16 Q18 5 30 5 Q42 5 42 16 L42 19 Q30 22 18 19 Z" fill="rgba(0,0,0,0.45)"/>
+  <!-- Visor slit -->
+  <rect x="22" y="14" width="16" height="3" rx="1.5" fill="rgba(0,0,0,0.6)"/>
+  <!-- Eye glow behind visor -->
+  <rect x="24" y="14.5" width="5" height="2" rx="1" fill="#fbbf24" opacity="0.8"/>
+  <rect x="31" y="14.5" width="5" height="2" rx="1" fill="#fbbf24" opacity="0.8"/>
+</svg>
+{% endmacro %}
+
+{# ── Mage ─────────────────────────────────────────────────────────────────── #}
+{% macro _mage(c, dark, size) %}
+<svg width="{{ size }}" height="{{ size * 1.35 | int }}" viewBox="0 0 60 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shadow -->
+  <ellipse cx="30" cy="77" rx="12" ry="3.5" fill="rgba(0,0,0,0.3)"/>
+  <!-- Robe bottom -->
+  <path d="M16 55 Q14 75 20 74 L40 74 Q46 75 44 55 Z" fill="{{ c }}" opacity="0.9"/>
+  <path d="M20 55 Q22 70 30 70 Q38 70 40 55 Z" fill="rgba(255,255,255,0.08)"/>
+  <!-- Staff (right hand, raised high) -->
+  <rect x="46" y="8" width="4" height="54" rx="2" fill="#7a5a2a"/>
+  <!-- Orb at top of staff -->
+  <circle cx="48" cy="8" r="7" fill="{{ c }}" opacity="0.9"/>
+  <circle cx="48" cy="8" r="5" fill="{{ c }}"/>
+  <circle cx="46" cy="6" r="2" fill="rgba(255,255,255,0.6)"/>
+  <!-- Orb glow rings -->
+  <circle cx="48" cy="8" r="9" fill="none" stroke="{{ c }}" stroke-width="1" opacity="0.4"/>
+  <circle cx="48" cy="8" r="12" fill="none" stroke="{{ c }}" stroke-width="0.5" opacity="0.2"/>
+  <!-- Robe body -->
+  <rect x="16" y="26" width="30" height="30" rx="6" fill="{{ c }}" opacity="0.9"/>
+  <!-- Robe details / belt -->
+  <rect x="16" y="44" width="30" height="3" fill="rgba(0,0,0,0.3)"/>
+  <rect x="26" y="43" width="8" height="5" rx="1" fill="#fbbf24" opacity="0.8"/>
+  <!-- Left arm holding robe -->
+  <rect x="8" y="30" width="10" height="5" rx="2.5" fill="{{ c }}" opacity="0.9"/>
+  <!-- Neck -->
+  <rect x="24" y="21" width="12" height="7" rx="4" fill="{{ c }}" opacity="0.9"/>
+  <!-- Head -->
+  <ellipse cx="30" cy="16" rx="11" ry="10" fill="{{ c }}" opacity="0.95"/>
+  <!-- Wizard hat -->
+  <path d="M19 18 Q30 -4 41 18 Z" fill="rgba(0,0,0,0.5)"/>
+  <rect x="17" y="17" width="26" height="4" rx="2" fill="rgba(0,0,0,0.4)"/>
+  <!-- Hat star -->
+  <text x="29" y="12" font-size="5" text-anchor="middle" fill="rgba(255,255,255,0.8)">★</text>
+  <!-- Eyes -->
+  <circle cx="26" cy="17" r="2" fill="rgba(0,0,0,0.6)"/>
+  <circle cx="34" cy="17" r="2" fill="rgba(0,0,0,0.6)"/>
+  <circle cx="26.7" cy="16.3" r="0.8" fill="rgba(255,255,255,0.9)"/>
+  <circle cx="34.7" cy="16.3" r="0.8" fill="rgba(255,255,255,0.9)"/>
+  <!-- Sparkles around orb -->
+  <text x="36" y="5" font-size="6" fill="{{ c }}" opacity="0.7">✦</text>
+  <text x="52" y="18" font-size="5" fill="{{ c }}" opacity="0.5">✦</text>
+</svg>
+{% endmacro %}
+
+{# ── Rogue ─────────────────────────────────────────────────────────────────── #}
+{% macro _rogue(c, dark, size) %}
+<svg width="{{ size }}" height="{{ size * 1.35 | int }}" viewBox="0 0 60 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shadow -->
+  <ellipse cx="28" cy="77" rx="12" ry="3.5" fill="rgba(0,0,0,0.3)"/>
+  <!-- Back leg -->
+  <rect x="18" y="52" width="10" height="21" rx="4" fill="{{ c }}" opacity="0.7"/>
+  <!-- Front leg (bent, in a crouched lunge) -->
+  <rect x="29" y="52" width="10" height="16" rx="4" fill="{{ c }}" opacity="0.85"/>
+  <rect x="27" y="64" width="14" height="9" rx="3" fill="#1a1a1a"/>
+  <!-- Boot front -->
+  <rect x="16" y="68" width="13" height="7" rx="3" fill="#1a1a1a"/>
+  <!-- Cloak -->
+  <path d="M10 26 Q8 55 16 72 Q18 68 20 55 L20 26 Z" fill="{{ c }}" opacity="0.45"/>
+  <!-- Body -->
+  <rect x="16" y="24" width="26" height="30" rx="6" fill="{{ c }}" opacity="0.85"/>
+  <!-- Leather details -->
+  <rect x="21" y="28" width="16" height="20" rx="4" fill="rgba(0,0,0,0.25)"/>
+  <rect x="23" y="30" width="5" height="2" rx="1" fill="rgba(255,255,255,0.2)"/>
+  <rect x="30" y="30" width="5" height="2" rx="1" fill="rgba(255,255,255,0.2)"/>
+  <!-- Daggers -->
+  <!-- Right dagger (forward, stabbing pose) -->
+  <rect x="42" y="30" width="3" height="20" rx="1.5" fill="#d0d8e8"/>
+  <rect x="40" y="28" width="7" height="3" rx="1" fill="#8a7a5a"/>
+  <!-- Left dagger (back hand, defensive) -->
+  <rect x="8" y="34" width="3" height="16" rx="1.5" fill="#d0d8e8" transform="rotate(-20, 8, 34)"/>
+  <!-- Hood -->
+  <path d="M16 22 Q16 10 30 8 Q44 10 44 22 Q38 18 30 18 Q22 18 16 22 Z" fill="rgba(0,0,0,0.5)"/>
+  <!-- Head -->
+  <ellipse cx="30" cy="16" rx="10" ry="10" fill="{{ c }}" opacity="0.9"/>
+  <!-- Mask covering lower face -->
+  <rect x="20" y="17" width="20" height="8" rx="4" fill="rgba(0,0,0,0.5)"/>
+  <!-- Eyes (glowing through mask) -->
+  <rect x="24" y="14" width="4" height="2.5" rx="1.2" fill="rgba(255,255,255,0.9)"/>
+  <rect x="32" y="14" width="4" height="2.5" rx="1.2" fill="rgba(255,255,255,0.9)"/>
+</svg>
+{% endmacro %}
+
+{# ── Healer ───────────────────────────────────────────────────────────────── #}
+{% macro _healer(c, dark, size) %}
+<svg width="{{ size }}" height="{{ size * 1.35 | int }}" viewBox="0 0 60 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shadow -->
+  <ellipse cx="30" cy="77" rx="13" ry="3.5" fill="rgba(0,0,0,0.3)"/>
+  <!-- Robe -->
+  <path d="M15 54 Q13 76 22 75 L38 75 Q47 76 45 54 Z" fill="white" opacity="0.9"/>
+  <path d="M18 54 Q20 70 30 70 Q40 70 42 54 Z" fill="{{ c }}" opacity="0.15"/>
+  <!-- Body -->
+  <rect x="14" y="24" width="32" height="32" rx="7" fill="white" opacity="0.92"/>
+  <!-- Cross emblem on chest -->
+  <rect x="26" y="30" width="8" height="20" rx="2" fill="{{ c }}" opacity="0.9"/>
+  <rect x="20" y="36" width="20" height="8" rx="2" fill="{{ c }}" opacity="0.9"/>
+  <!-- Halo ring -->
+  <circle cx="30" cy="10" r="13" fill="none" stroke="#fbbf24" stroke-width="2.5" opacity="0.6"/>
+  <circle cx="30" cy="10" r="13" fill="none" stroke="#fde68a" stroke-width="1" opacity="0.4"/>
+  <!-- Staff -->
+  <rect x="46" y="14" width="4" height="52" rx="2" fill="#c8a870"/>
+  <!-- Heart atop staff -->
+  <path d="M48 14 C48 14 42 8 42 5 C42 2 44 1 46 3 C47 1 50 1 50 3 C52 1 54 2 54 5 C54 8 48 14 48 14 Z" fill="#f87171"/>
+  <!-- Healing sparkles -->
+  <text x="8" y="38" font-size="7" fill="#4ade80" opacity="0.7">✦</text>
+  <text x="38" y="22" font-size="5" fill="{{ c }}" opacity="0.6">✦</text>
+  <!-- Head -->
+  <ellipse cx="30" cy="17" rx="11" ry="10" fill="#fde8cc"/>
+  <!-- Veil / headband -->
+  <rect x="18" y="15" width="24" height="5" rx="2.5" fill="white" opacity="0.8"/>
+  <rect x="22" y="14" width="16" height="3" rx="1.5" fill="{{ c }}" opacity="0.6"/>
+  <!-- Eyes -->
+  <ellipse cx="26" cy="18" rx="2.5" ry="2" fill="#5a3a1a"/>
+  <ellipse cx="34" cy="18" rx="2.5" ry="2" fill="#5a3a1a"/>
+  <circle cx="26.8" cy="17.2" r="0.9" fill="white"/>
+  <circle cx="34.8" cy="17.2" r="0.9" fill="white"/>
+  <!-- Smile -->
+  <path d="M26 22 Q30 25 34 22" stroke="#5a3a1a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+</svg>
+{% endmacro %}
+
+{# ── Ranger ───────────────────────────────────────────────────────────────── #}
+{% macro _ranger(c, dark, size) %}
+<svg width="{{ size }}" height="{{ size * 1.35 | int }}" viewBox="0 0 60 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shadow -->
+  <ellipse cx="30" cy="77" rx="13" ry="3.5" fill="rgba(0,0,0,0.3)"/>
+  <!-- Legs -->
+  <rect x="16" y="53" width="11" height="20" rx="4" fill="{{ c }}" opacity="0.8"/>
+  <rect x="32" y="53" width="11" height="20" rx="4" fill="{{ c }}" opacity="0.8"/>
+  <!-- Boots with buckle -->
+  <rect x="14" y="66" width="14" height="9" rx="3" fill="#3a2010"/>
+  <rect x="31" y="66" width="14" height="9" rx="3" fill="#3a2010"/>
+  <rect x="18" y="64" width="6" height="3" rx="1" fill="#fbbf24" opacity="0.7"/>
+  <rect x="35" y="64" width="6" height="3" rx="1" fill="#fbbf24" opacity="0.7"/>
+  <!-- Quiver on back -->
+  <rect x="8" y="24" width="8" height="26" rx="3" fill="#6b4226"/>
+  <line x1="11" y1="22" x2="11" y2="28" stroke="#d0d8e8" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="13" y1="21" x2="13" y2="27" stroke="#d0d8e8" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="15" y1="22" x2="15" y2="28" stroke="#d0d8e8" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Body -->
+  <rect x="14" y="24" width="30" height="31" rx="6" fill="{{ c }}" opacity="0.9"/>
+  <!-- Leather vest -->
+  <rect x="19" y="27" width="20" height="22" rx="4" fill="rgba(0,0,0,0.22)"/>
+  <rect x="21" y="29" width="8" height="2" rx="1" fill="rgba(255,255,255,0.2)"/>
+  <!-- Bow (left arm extended toward boss / right in SVG coords since char faces right) -->
+  <!-- The bow is held out to the right since the character faces right -->
+  <path d="M42 18 C55 22 55 48 42 52" stroke="#8a6030" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- Bowstring -->
+  <line x1="42" y1="18" x2="42" y2="52" stroke="#e0d8c0" stroke-width="1" stroke-dasharray="2 1"/>
+  <!-- Arrow nocked -->
+  <line x1="30" y1="34" x2="52" y2="34" stroke="#d0d8e8" stroke-width="1.5" stroke-linecap="round"/>
+  <polygon points="52,34 48,31 48,37" fill="#d0d8e8"/>
+  <!-- Fletching -->
+  <rect x="30" y="32" width="4" height="2" rx="1" fill="{{ c }}"/>
+  <rect x="30" y="34" width="4" height="2" rx="1" fill="#fbbf24" opacity="0.8"/>
+  <!-- Neck -->
+  <rect x="23" y="19" width="12" height="7" rx="4" fill="{{ c }}"/>
+  <!-- Head -->
+  <ellipse cx="30" cy="15" rx="11" ry="10" fill="{{ c }}" opacity="0.95"/>
+  <!-- Ranger hood -->
+  <path d="M18 18 Q20 7 30 6 Q40 7 42 18 Q38 14 30 14 Q22 14 18 18 Z" fill="rgba(0,0,0,0.4)"/>
+  <!-- Leaf pin on hood -->
+  <path d="M28 10 Q30 7 32 10 Q30 12 28 10 Z" fill="#4ade80" opacity="0.8"/>
+  <!-- Eyes, focused/narrowed -->
+  <rect x="23" y="15" width="5" height="2.5" rx="1.2" fill="rgba(0,0,0,0.7)"/>
+  <rect x="32" y="15" width="5" height="2.5" rx="1.2" fill="rgba(0,0,0,0.7)"/>
+  <!-- Eye glow — aiming carefully -->
+  <rect x="35" y="15.5" width="1.5" height="1.5" rx="0.75" fill="#4ade80" opacity="0.9"/>
+</svg>
+{% endmacro %}
+
+
+{# ══════════════════════════════════════════════════════════════════════════════
+   BOSS SVGs — faces LEFT (toward heroes)
+   Each macro renders a self-contained boss illustration.
+══════════════════════════════════════════════════════════════════════════════ #}
+
+{% macro boss_svg(image_key, color="#8B0000") %}
+  {% if image_key == "laundry_golem" %}
+    {{ _boss_laundry_golem(color) }}
+  {% elif image_key == "dustmaw" %}
+    {{ _boss_dustmaw(color) }}
+  {% elif image_key == "homework_hydra" %}
+    {{ _boss_homework_hydra(color) }}
+  {% elif image_key == "bedtime_basilisk" %}
+    {{ _boss_bedtime_basilisk(color) }}
+  {% elif image_key == "lord_clutter" %}
+    {{ _boss_lord_clutter(color) }}
+  {% else %}
+    {{ _boss_lord_clutter(color) }}
+  {% endif %}
+{% endmacro %}
+
+{# ── Laundry Golem ─────────────────────────────────────────────────────────── #}
+{% macro _boss_laundry_golem(color) %}
+<svg width="200" height="260" viewBox="0 0 200 260" fill="none" xmlns="http://www.w3.org/2000/svg" class="boss-svg">
+  <!-- Shadow -->
+  <ellipse cx="100" cy="252" rx="65" ry="12" fill="rgba(0,0,0,0.5)"/>
+  <!-- Legs (big chunky laundry-basket legs) -->
+  <rect x="45" y="180" width="45" height="60" rx="8" fill="{{ color }}" opacity="0.9"/>
+  <rect x="112" y="180" width="45" height="60" rx="8" fill="{{ color }}" opacity="0.9"/>
+  <!-- Sock decorations on legs -->
+  <rect x="50" y="195" width="35" height="8" rx="3" fill="rgba(255,255,255,0.2)"/>
+  <rect x="117" y="195" width="35" height="8" rx="3" fill="rgba(255,255,255,0.2)"/>
+  <!-- Body (large tumble dryer shape) -->
+  <rect x="30" y="80" width="142" height="110" rx="20" fill="{{ color }}"/>
+  <!-- Body highlights -->
+  <rect x="40" y="90" width="122" height="90" rx="15" fill="rgba(255,255,255,0.07)"/>
+  <!-- Drum door (circle window on body) -->
+  <circle cx="100" cy="135" r="38" fill="{{ color }}" opacity="0.8"/>
+  <circle cx="100" cy="135" r="34" fill="#0d0508"/>
+  <circle cx="100" cy="135" r="28" fill="rgba(255,255,255,0.04)"/>
+  <!-- Tumbling clothes visible through window -->
+  <path d="M80 125 Q100 115 120 125 Q110 145 90 145 Q75 140 80 125 Z" fill="rgba(255,255,255,0.12)"/>
+  <path d="M88 120 Q100 130 108 118" stroke="rgba(255,200,100,0.4)" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M92 148 Q100 138 114 142" stroke="rgba(100,180,255,0.4)" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- Control panel row (top of body) -->
+  <rect x="40" y="88" width="122" height="18" rx="6" fill="rgba(0,0,0,0.3)"/>
+  <circle cx="60" cy="97" r="6" fill="{{ color }}" opacity="0.8"/>
+  <circle cx="60" cy="97" r="4" fill="rgba(255,255,255,0.2)"/>
+  <circle cx="78" cy="97" r="4" fill="#ef4444" opacity="0.9"/>
+  <circle cx="93" cy="97" r="4" fill="#fbbf24" opacity="0.9"/>
+  <!-- Arms (sock-stuffed, floppy) -->
+  <!-- Left arm -->
+  <path d="M32 120 Q10 110 8 90 Q6 72 18 70" stroke="{{ color }}" stroke-width="22" fill="none" stroke-linecap="round"/>
+  <path d="M32 120 Q10 110 8 90 Q6 72 18 70" stroke="rgba(255,255,255,0.08)" stroke-width="18" fill="none" stroke-linecap="round"/>
+  <!-- Right arm (raised, menacing) -->
+  <path d="M170 110 Q192 90 194 68 Q196 50 186 46" stroke="{{ color }}" stroke-width="22" fill="none" stroke-linecap="round"/>
+  <path d="M170 110 Q192 90 194 68 Q196 50 186 46" stroke="rgba(255,255,255,0.08)" stroke-width="18" fill="none" stroke-linecap="round"/>
+  <!-- Fist / sock hands -->
+  <circle cx="18" cy="68" r="16" fill="{{ color }}" opacity="0.9"/>
+  <circle cx="186" cy="44" r="16" fill="{{ color }}" opacity="0.9"/>
+  <!-- Sock pattern on hands -->
+  <path d="M10 66 Q18 60 26 66" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
+  <path d="M178 42 Q186 36 194 42" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
+  <!-- Neck -->
+  <rect x="76" y="62" width="48" height="22" rx="8" fill="{{ color }}"/>
+  <!-- Head (washing machine drum face) -->
+  <ellipse cx="100" cy="48" rx="48" ry="46" fill="{{ color }}"/>
+  <ellipse cx="100" cy="48" rx="44" ry="42" fill="rgba(0,0,0,0.2)"/>
+  <!-- Eyes (porthole-style, glowing red) -->
+  <circle cx="78" cy="42" r="14" fill="#0d0508"/>
+  <circle cx="122" cy="42" r="14" fill="#0d0508"/>
+  <circle cx="78" cy="42" r="10" fill="#7f1d1d"/>
+  <circle cx="122" cy="42" r="10" fill="#7f1d1d"/>
+  <circle cx="78" cy="42" r="6" fill="#ef4444"/>
+  <circle cx="122" cy="42" r="6" fill="#ef4444"/>
+  <circle cx="75" cy="39" r="3" fill="#fca5a5" opacity="0.8"/>
+  <circle cx="119" cy="39" r="3" fill="#fca5a5" opacity="0.8"/>
+  <!-- Angry brow straps -->
+  <rect x="64" y="29" width="28" height="6" rx="3" fill="rgba(0,0,0,0.6)" transform="rotate(-12 64 29)"/>
+  <rect x="108" y="29" width="28" height="6" rx="3" fill="rgba(0,0,0,0.6)" transform="rotate(12 108 29)"/>
+  <!-- Mouth (zipper grin) -->
+  <path d="M75 62 Q100 72 125 62" stroke="rgba(0,0,0,0.6)" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <line x1="80" y1="63" x2="80" y2="70" stroke="#fbbf24" stroke-width="2"/>
+  <line x1="90" y1="65" x2="90" y2="72" stroke="#fbbf24" stroke-width="2"/>
+  <line x1="100" y1="66" x2="100" y2="73" stroke="#fbbf24" stroke-width="2"/>
+  <line x1="110" y1="65" x2="110" y2="72" stroke="#fbbf24" stroke-width="2"/>
+  <line x1="120" y1="63" x2="120" y2="70" stroke="#fbbf24" stroke-width="2"/>
+  <!-- Flying socks (atmosphere) -->
+  <path d="M160 30 Q170 24 175 30 Q178 38 170 40 Q162 38 160 30 Z" fill="rgba(255,255,255,0.15)" transform="rotate(-20 168 34)"/>
+  <path d="M15 40 Q22 35 26 42 Q28 50 20 50 Q13 48 15 40 Z" fill="rgba(255,255,255,0.12)" transform="rotate(15 20 42)"/>
+</svg>
+{% endmacro %}
+
+{# ── Dustmaw ───────────────────────────────────────────────────────────────── #}
+{% macro _boss_dustmaw(color) %}
+<svg width="200" height="260" viewBox="0 0 200 260" fill="none" xmlns="http://www.w3.org/2000/svg" class="boss-svg">
+  <ellipse cx="100" cy="252" rx="60" ry="11" fill="rgba(0,0,0,0.5)"/>
+  <!-- Dust cloud body - amorphous -->
+  <ellipse cx="100" cy="140" rx="80" ry="90" fill="{{ color }}" opacity="0.7"/>
+  <ellipse cx="80" cy="130" rx="55" ry="65" fill="{{ color }}" opacity="0.5"/>
+  <ellipse cx="120" cy="145" rx="50" ry="60" fill="{{ color }}" opacity="0.5"/>
+  <ellipse cx="100" cy="100" rx="70" ry="65" fill="{{ color }}" opacity="0.6"/>
+  <!-- Dust wisps -->
+  <ellipse cx="40" cy="120" rx="30" ry="20" fill="{{ color }}" opacity="0.4"/>
+  <ellipse cx="160" cy="130" rx="28" ry="18" fill="{{ color }}" opacity="0.4"/>
+  <ellipse cx="70" cy="200" rx="35" ry="22" fill="{{ color }}" opacity="0.5"/>
+  <ellipse cx="130" cy="205" rx="32" ry="20" fill="{{ color }}" opacity="0.5"/>
+  <!-- Inner glow core -->
+  <ellipse cx="100" cy="120" rx="50" ry="55" fill="rgba(255,255,255,0.04)"/>
+  <!-- Claw arms -->
+  <!-- Left arm -->
+  <path d="M35 130 Q8 115 5 95" stroke="{{ color }}" stroke-width="18" fill="none" stroke-linecap="round"/>
+  <!-- Left claws -->
+  <line x1="5" y1="95" x2="-8" y2="78" stroke="{{ color }}" stroke-width="8" stroke-linecap="round"/>
+  <line x1="5" y1="95" x2="2" y2="72" stroke="{{ color }}" stroke-width="8" stroke-linecap="round"/>
+  <line x1="5" y1="95" x2="16" y2="74" stroke="{{ color }}" stroke-width="8" stroke-linecap="round"/>
+  <!-- Right arm -->
+  <path d="M165 125 Q192 108 196 88" stroke="{{ color }}" stroke-width="18" fill="none" stroke-linecap="round"/>
+  <!-- Right claws (pointing left toward heroes) -->
+  <line x1="196" y1="88" x2="210" y2="70" stroke="{{ color }}" stroke-width="8" stroke-linecap="round"/>
+  <line x1="196" y1="88" x2="200" y2="64" stroke="{{ color }}" stroke-width="8" stroke-linecap="round"/>
+  <line x1="196" y1="88" x2="186" y2="68" stroke="{{ color }}" stroke-width="8" stroke-linecap="round"/>
+  <!-- Head area -->
+  <ellipse cx="100" cy="80" rx="55" ry="52" fill="{{ color }}"/>
+  <ellipse cx="100" cy="75" rx="48" ry="44" fill="rgba(0,0,0,0.2)"/>
+  <!-- Eyes (sinister, asymmetric) -->
+  <ellipse cx="76" cy="68" rx="16" ry="12" fill="#0d0d0d"/>
+  <ellipse cx="126" cy="72" rx="12" ry="9" fill="#0d0d0d"/>
+  <circle cx="76" cy="68" r="9" fill="#ef4444"/>
+  <circle cx="126" cy="72" r="6" fill="#ef4444"/>
+  <!-- Pupils -->
+  <ellipse cx="76" cy="68" rx="4" ry="7" fill="#0d0d0d"/>
+  <ellipse cx="126" cy="72" rx="3" ry="5" fill="#0d0d0d"/>
+  <!-- Eye shines -->
+  <circle cx="72" cy="64" r="3" fill="#fca5a5" opacity="0.7"/>
+  <circle cx="123" cy="69" r="2.5" fill="#fca5a5" opacity="0.7"/>
+  <!-- Gaping maw -->
+  <path d="M60 94 Q100 120 140 94 Q130 106 100 110 Q70 106 60 94 Z" fill="#0d0d0d"/>
+  <!-- Teeth -->
+  <polygon points="70,96 76,108 82,96" fill="rgba(255,255,255,0.7)"/>
+  <polygon points="86,100 90,112 94,100" fill="rgba(255,255,255,0.7)"/>
+  <polygon points="100,102 104,114 108,102" fill="rgba(255,255,255,0.7)"/>
+  <polygon points="114,100 118,112 122,100" fill="rgba(255,255,255,0.7)"/>
+  <polygon points="128,96 132,108 136,96" fill="rgba(255,255,255,0.7)"/>
+  <!-- Dust particles floating -->
+  <circle cx="30" cy="60" r="4" fill="{{ color }}" opacity="0.5"/>
+  <circle cx="170" cy="50" r="5" fill="{{ color }}" opacity="0.4"/>
+  <circle cx="155" cy="170" r="6" fill="{{ color }}" opacity="0.4"/>
+  <circle cx="50" cy="180" r="4" fill="{{ color }}" opacity="0.45"/>
+  <circle cx="25" cy="150" r="3" fill="{{ color }}" opacity="0.3"/>
+  <circle cx="180" cy="160" r="3" fill="{{ color }}" opacity="0.3"/>
+</svg>
+{% endmacro %}
+
+{# ── Homework Hydra ────────────────────────────────────────────────────────── #}
+{% macro _boss_homework_hydra(color) %}
+<svg width="200" height="260" viewBox="0 0 200 260" fill="none" xmlns="http://www.w3.org/2000/svg" class="boss-svg">
+  <ellipse cx="100" cy="252" rx="55" ry="11" fill="rgba(0,0,0,0.5)"/>
+  <!-- Body -->
+  <ellipse cx="100" cy="180" rx="55" ry="65" fill="{{ color }}" opacity="0.85"/>
+  <!-- Scale texture -->
+  <ellipse cx="90" cy="170" rx="12" ry="8" fill="rgba(255,255,255,0.06)"/>
+  <ellipse cx="112" cy="162" rx="10" ry="7" fill="rgba(255,255,255,0.06)"/>
+  <ellipse cx="100" cy="185" rx="14" ry="9" fill="rgba(255,255,255,0.05)"/>
+  <!-- Clawed feet -->
+  <ellipse cx="74" cy="238" rx="22" ry="14" fill="{{ color }}" opacity="0.9"/>
+  <ellipse cx="126" cy="238" rx="22" ry="14" fill="{{ color }}" opacity="0.9"/>
+  <line x1="62" y1="244" x2="55" y2="255" stroke="{{ color }}" stroke-width="6" stroke-linecap="round"/>
+  <line x1="72" y1="248" x2="68" y2="258" stroke="{{ color }}" stroke-width="6" stroke-linecap="round"/>
+  <line x1="82" y1="248" x2="82" y2="258" stroke="{{ color }}" stroke-width="6" stroke-linecap="round"/>
+  <line x1="118" y1="248" x2="118" y2="258" stroke="{{ color }}" stroke-width="6" stroke-linecap="round"/>
+  <line x1="128" y1="248" x2="132" y2="258" stroke="{{ color }}" stroke-width="6" stroke-linecap="round"/>
+  <line x1="138" y1="244" x2="145" y2="255" stroke="{{ color }}" stroke-width="6" stroke-linecap="round"/>
+  <!-- THREE NECKS -->
+  <!-- Center neck -->
+  <path d="M86 140 Q80 100 86 60" stroke="{{ color }}" stroke-width="28" fill="none" stroke-linecap="round"/>
+  <!-- Left neck -->
+  <path d="M80 145 Q45 110 28 72" stroke="{{ color }}" stroke-width="22" fill="none" stroke-linecap="round"/>
+  <!-- Right neck -->
+  <path d="M120 140 Q155 100 170 58" stroke="{{ color }}" stroke-width="22" fill="none" stroke-linecap="round"/>
+  <!-- CENTER HEAD (largest, main face facing left) -->
+  <ellipse cx="86" cy="48" rx="36" ry="30" fill="{{ color }}"/>
+  <ellipse cx="86" cy="44" rx="30" ry="24" fill="rgba(0,0,0,0.2)"/>
+  <!-- Center eyes -->
+  <circle cx="70" cy="40" r="10" fill="#0d0508"/>
+  <circle cx="70" cy="40" r="7" fill="#c084fc"/>
+  <circle cx="70" cy="40" r="4" fill="#0d0508"/>
+  <circle cx="67" cy="37" r="2.5" fill="rgba(255,255,255,0.7)"/>
+  <circle cx="100" cy="44" r="7" fill="#0d0508"/>
+  <circle cx="100" cy="44" r="5" fill="#c084fc"/>
+  <circle cx="100" cy="44" r="2.5" fill="#0d0508"/>
+  <!-- Center mouth (wide, paper-like) -->
+  <path d="M56 58 Q86 72 116 58 Q106 68 86 70 Q66 68 56 58 Z" fill="#0d0508"/>
+  <!-- Papers/homework in mouth -->
+  <rect x="66" y="60" width="14" height="10" rx="1" fill="rgba(255,255,255,0.8)" transform="rotate(-8 66 60)"/>
+  <rect x="84" y="59" width="14" height="10" rx="1" fill="rgba(255,255,255,0.7)" transform="rotate(4 84 59)"/>
+  <line x1="68" y1="62" x2="78" y2="62" stroke="#9b59b6" stroke-width="1"/>
+  <line x1="68" y1="65" x2="76" y2="65" stroke="#9b59b6" stroke-width="1"/>
+  <!-- LEFT HEAD (smaller, snarling) -->
+  <ellipse cx="28" cy="62" rx="26" ry="22" fill="{{ color }}" opacity="0.9"/>
+  <circle cx="18" cy="56" r="8" fill="#0d0508"/>
+  <circle cx="18" cy="56" r="5" fill="#c084fc"/>
+  <circle cx="18" cy="56" r="3" fill="#0d0508"/>
+  <circle cx="15" cy="53" r="1.8" fill="rgba(255,255,255,0.7)"/>
+  <circle cx="36" cy="58" r="6" fill="#0d0508"/>
+  <circle cx="36" cy="58" r="4" fill="#c084fc"/>
+  <path d="M8 70 Q28 80 48 70 Q40 77 28 78 Q16 77 8 70 Z" fill="#0d0508"/>
+  <!-- LEFT head drool/paper -->
+  <line x1="24" y1="79" x2="26" y2="90" stroke="{{ color }}" stroke-width="2" opacity="0.5"/>
+  <!-- RIGHT HEAD (smaller, spitting papers) -->
+  <ellipse cx="172" cy="48" rx="26" ry="22" fill="{{ color }}" opacity="0.9"/>
+  <circle cx="162" cy="42" r="8" fill="#0d0508"/>
+  <circle cx="162" cy="42" r="5" fill="#c084fc"/>
+  <circle cx="162" cy="42" r="3" fill="#0d0508"/>
+  <circle cx="159" cy="39" r="1.8" fill="rgba(255,255,255,0.7)"/>
+  <circle cx="182" cy="46" r="6" fill="#0d0508"/>
+  <circle cx="182" cy="46" r="4" fill="#c084fc"/>
+  <path d="M152 56 Q172 66 192 56 Q184 63 172 64 Q160 63 152 56 Z" fill="#0d0508"/>
+  <!-- Flying papers atmosphere -->
+  <rect x="8" y="30" width="10" height="14" rx="1" fill="rgba(255,255,255,0.2)" transform="rotate(25 8 30)"/>
+  <rect x="155" y="15" width="10" height="14" rx="1" fill="rgba(255,255,255,0.2)" transform="rotate(-18 155 15)"/>
+  <rect x="135" y="185" width="8" height="12" rx="1" fill="rgba(255,255,255,0.15)" transform="rotate(10 135 185)"/>
+</svg>
+{% endmacro %}
+
+{# ── Bedtime Basilisk ──────────────────────────────────────────────────────── #}
+{% macro _boss_bedtime_basilisk(color) %}
+<svg width="200" height="260" viewBox="0 0 200 260" fill="none" xmlns="http://www.w3.org/2000/svg" class="boss-svg">
+  <ellipse cx="100" cy="254" rx="55" ry="10" fill="rgba(0,0,0,0.5)"/>
+  <!-- Coiled serpentine body -->
+  <path d="M120 240 Q170 230 178 195 Q186 160 165 150 Q145 140 130 160 Q115 180 130 200 Q145 218 160 208 Q175 198 168 182 Q161 166 148 170" stroke="{{ color }}" stroke-width="34" fill="none" stroke-linecap="round"/>
+  <path d="M80 240 Q30 235 22 200 Q14 165 38 155" stroke="{{ color }}" stroke-width="28" fill="none" stroke-linecap="round"/>
+  <!-- Belly highlight on body -->
+  <path d="M120 240 Q165 228 172 196 Q178 165 162 156" stroke="rgba(255,255,255,0.08)" stroke-width="20" fill="none" stroke-linecap="round"/>
+  <!-- Upper body / rising portion -->
+  <path d="M100 235 Q100 180 90 140 Q80 100 88 70" stroke="{{ color }}" stroke-width="40" fill="none" stroke-linecap="round"/>
+  <!-- Belly stripe -->
+  <path d="M100 235 Q100 180 90 140 Q82 106 88 75" stroke="rgba(255,255,255,0.09)" stroke-width="24" fill="none" stroke-linecap="round"/>
+  <!-- Hood / neck frill -->
+  <path d="M60 80 Q50 50 70 40 Q88 55 88 70 Z" fill="{{ color }}" opacity="0.7"/>
+  <path d="M116 80 Q126 50 106 40 Q88 55 88 70 Z" fill="{{ color }}" opacity="0.7"/>
+  <path d="M52 90 Q38 68 52 55 Q72 62 78 75 Z" fill="{{ color }}" opacity="0.5"/>
+  <path d="M124 90 Q138 68 124 55 Q104 62 98 75 Z" fill="{{ color }}" opacity="0.5"/>
+  <!-- Head -->
+  <ellipse cx="88" cy="48" rx="42" ry="36" fill="{{ color }}"/>
+  <ellipse cx="88" cy="44" rx="36" ry="28" fill="rgba(0,0,0,0.2)"/>
+  <!-- Hypnotic eyes (clockwise spirals, main weapon) -->
+  <circle cx="68" cy="40" r="14" fill="#0a1008"/>
+  <circle cx="108" cy="40" r="14" fill="#0a1008"/>
+  <!-- Spiral patterns — the basilisk stare -->
+  <path d="M68 40 Q72 36 72 40 Q72 44 68 44 Q64 44 64 40 Q64 36 68 36 Q74 36 74 42" stroke="#4ade80" stroke-width="1.5" fill="none"/>
+  <path d="M108 40 Q112 36 112 40 Q112 44 108 44 Q104 44 104 40 Q104 36 108 36 Q114 36 114 42" stroke="#4ade80" stroke-width="1.5" fill="none"/>
+  <!-- Iris glow -->
+  <circle cx="68" cy="40" r="6" fill="{{ color }}" opacity="0.6"/>
+  <circle cx="108" cy="40" r="6" fill="{{ color }}" opacity="0.6"/>
+  <circle cx="68" cy="40" r="3" fill="#0a1008"/>
+  <circle cx="108" cy="40" r="3" fill="#0a1008"/>
+  <circle cx="65" cy="37" r="2" fill="rgba(255,255,255,0.5)"/>
+  <circle cx="105" cy="37" r="2" fill="rgba(255,255,255,0.5)"/>
+  <!-- Sleep-inducing glow from eyes -->
+  <circle cx="68" cy="40" r="18" fill="{{ color }}" opacity="0.12"/>
+  <circle cx="108" cy="40" r="18" fill="{{ color }}" opacity="0.12"/>
+  <!-- Forked tongue -->
+  <path d="M72 68 Q88 80 104 68" stroke="{{ color }}" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <line x1="88" y1="78" x2="82" y2="90" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+  <line x1="88" y1="78" x2="94" y2="90" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+  <!-- Crescent moon crown (bedtime theme) -->
+  <path d="M66 12 Q78 2 90 12 Q82 8 76 12 Q72 16 74 22 Q66 18 66 12 Z" fill="#fbbf24" opacity="0.9"/>
+  <!-- Stars around head (sleepy aura) -->
+  <text x="40" y="28" font-size="10" fill="#fbbf24" opacity="0.6">★</text>
+  <text x="128" y="24" font-size="8" fill="#fbbf24" opacity="0.5">✦</text>
+  <text x="46" y="72" font-size="7" fill="#93c5fd" opacity="0.5">✦</text>
+  <text x="132" y="75" font-size="9" fill="#93c5fd" opacity="0.5">★</text>
+</svg>
+{% endmacro %}
+
+{# ── Lord Clutter ─────────────────────────────────────────────────────────── #}
+{% macro _boss_lord_clutter(color) %}
+<svg width="200" height="260" viewBox="0 0 200 260" fill="none" xmlns="http://www.w3.org/2000/svg" class="boss-svg">
+  <ellipse cx="100" cy="252" rx="70" ry="13" fill="rgba(0,0,0,0.55)"/>
+  <!-- Massive cloak/cape made of clutter -->
+  <path d="M28 90 Q-5 160 20 240 L180 240 Q205 160 172 90 Q140 70 100 68 Q60 70 28 90 Z" fill="{{ color }}" opacity="0.7"/>
+  <!-- Clutter items on cloak (random objects) -->
+  <rect x="35" y="130" width="18" height="24" rx="2" fill="rgba(255,255,255,0.1)"/>
+  <rect x="38" y="133" width="12" height="4" rx="1" fill="rgba(255,200,100,0.3)"/>
+  <circle cx="145" cy="150" r="10" fill="rgba(100,150,255,0.15)"/>
+  <rect x="55" y="185" width="22" height="14" rx="3" fill="rgba(255,255,255,0.08)"/>
+  <rect x="125" y="175" width="16" height="22" rx="2" fill="rgba(255,255,255,0.08)"/>
+  <circle cx="90" cy="210" r="8" fill="rgba(255,150,50,0.15)"/>
+  <rect x="105" y="205" width="20" height="12" rx="2" fill="rgba(255,255,255,0.07)"/>
+  <!-- Body under cloak -->
+  <rect x="56" y="80" width="88" height="110" rx="14" fill="{{ color }}"/>
+  <rect x="64" y="88" width="72" height="94" rx="10" fill="rgba(255,255,255,0.06)"/>
+  <!-- Chest armor / symbol -->
+  <circle cx="100" cy="128" r="24" fill="rgba(0,0,0,0.35)"/>
+  <circle cx="100" cy="128" r="18" fill="{{ color }}" opacity="0.8"/>
+  <!-- Skull-like symbol on chest -->
+  <circle cx="100" cy="124" r="10" fill="rgba(0,0,0,0.5)"/>
+  <circle cx="95" cy="122" r="3" fill="#ef4444" opacity="0.9"/>
+  <circle cx="105" cy="122" r="3" fill="#ef4444" opacity="0.9"/>
+  <path d="M94 130 Q100 134 106 130" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" fill="none"/>
+  <!-- Massive arms (junk-armored) -->
+  <!-- Left arm -->
+  <path d="M56 110 Q20 100 10 80" stroke="{{ color }}" stroke-width="26" fill="none" stroke-linecap="round"/>
+  <!-- Left gauntlet -->
+  <ellipse cx="10" cy="78" rx="20" ry="16" fill="{{ color }}" opacity="0.9"/>
+  <ellipse cx="10" cy="78" rx="14" ry="11" fill="rgba(0,0,0,0.3)"/>
+  <!-- Left claws -->
+  <line x1="-4" y1="72" x2="-14" y2="60" stroke="{{ color }}" stroke-width="7" stroke-linecap="round"/>
+  <line x1="4" y1="68" x2="-2" y2="55" stroke="{{ color }}" stroke-width="7" stroke-linecap="round"/>
+  <line x1="14" y1="67" x2="12" y2="53" stroke="{{ color }}" stroke-width="7" stroke-linecap="round"/>
+  <!-- Right arm (raised high, pointing at heroes) -->
+  <path d="M144 108 Q178 88 190 62" stroke="{{ color }}" stroke-width="26" fill="none" stroke-linecap="round"/>
+  <!-- Right gauntlet -->
+  <ellipse cx="190" cy="60" rx="20" ry="16" fill="{{ color }}" opacity="0.9"/>
+  <ellipse cx="190" cy="60" rx="14" ry="11" fill="rgba(0,0,0,0.3)"/>
+  <!-- Right claws pointing left (toward heroes) -->
+  <line x1="176" y1="54" x2="166" y2="42" stroke="{{ color }}" stroke-width="7" stroke-linecap="round"/>
+  <line x1="184" y1="50" x2="178" y2="37" stroke="{{ color }}" stroke-width="7" stroke-linecap="round"/>
+  <line x1="194" y1="50" x2="192" y2="36" stroke="{{ color }}" stroke-width="7" stroke-linecap="round"/>
+  <!-- Neck -->
+  <rect x="76" y="62" width="48" height="22" rx="8" fill="{{ color }}"/>
+  <!-- Head (large, tyrannical) -->
+  <ellipse cx="100" cy="46" rx="52" ry="46" fill="{{ color }}"/>
+  <ellipse cx="100" cy="42" rx="44" ry="38" fill="rgba(0,0,0,0.18)"/>
+  <!-- Crown of junk -->
+  <rect x="62" y="8" width="12" height="20" rx="2" fill="{{ color }}" opacity="0.9"/>
+  <rect x="80" y="4" width="12" height="24" rx="2" fill="{{ color }}" opacity="0.9"/>
+  <rect x="98" y="2" width="12" height="26" rx="2" fill="{{ color }}" opacity="0.9"/>
+  <rect x="116" y="4" width="12" height="24" rx="2" fill="{{ color }}" opacity="0.9"/>
+  <rect x="132" y="8" width="12" height="20" rx="2" fill="{{ color }}" opacity="0.9"/>
+  <!-- Crown gems -->
+  <circle cx="68" cy="10" r="4" fill="#fbbf24"/>
+  <circle cx="86" cy="6" r="4" fill="#ef4444"/>
+  <circle cx="104" cy="4" r="5" fill="#c084fc"/>
+  <circle cx="122" cy="6" r="4" fill="#60a5fa"/>
+  <circle cx="138" cy="10" r="4" fill="#4ade80"/>
+  <!-- Eyes (burning red rage) -->
+  <ellipse cx="78" cy="40" rx="16" ry="13" fill="#0d0508"/>
+  <ellipse cx="122" cy="40" rx="16" ry="13" fill="#0d0508"/>
+  <ellipse cx="78" cy="40" rx="11" ry="9" fill="#7f1d1d"/>
+  <ellipse cx="122" cy="40" rx="11" ry="9" fill="#7f1d1d"/>
+  <ellipse cx="78" cy="40" rx="7" ry="6" fill="#ef4444"/>
+  <ellipse cx="122" cy="40" rx="7" ry="6" fill="#ef4444"/>
+  <ellipse cx="78" cy="40" rx="3" ry="4" fill="#0d0508"/>
+  <ellipse cx="122" cy="40" rx="3" ry="4" fill="#0d0508"/>
+  <circle cx="74" cy="37" r="3" fill="#fca5a5" opacity="0.7"/>
+  <circle cx="118" cy="37" r="3" fill="#fca5a5" opacity="0.7"/>
+  <!-- Furious brows -->
+  <rect x="60" y="26" width="36" height="8" rx="4" fill="rgba(0,0,0,0.6)" transform="rotate(-15 60 26)"/>
+  <rect x="104" y="26" width="36" height="8" rx="4" fill="rgba(0,0,0,0.6)" transform="rotate(15 104 26)"/>
+  <!-- Yawning / roaring mouth -->
+  <path d="M66 58 Q100 78 134 58 Q120 72 100 74 Q80 72 66 58 Z" fill="#0d0508"/>
+  <!-- Teeth -->
+  <polygon points="74,60 80,72 86,60" fill="rgba(255,255,255,0.85)"/>
+  <polygon points="90,64 94,76 98,64" fill="rgba(255,255,255,0.85)"/>
+  <polygon points="102,64 106,76 110,64" fill="rgba(255,255,255,0.85)"/>
+  <polygon points="114,60 120,72 126,60" fill="rgba(255,255,255,0.85)"/>
+  <!-- Nose -->
+  <ellipse cx="100" cy="52" rx="8" ry="5" fill="rgba(0,0,0,0.25)"/>
+  <circle cx="96" cy="53" r="2.5" fill="rgba(0,0,0,0.4)"/>
+  <circle cx="104" cy="53" r="2.5" fill="rgba(0,0,0,0.4)"/>
+  <!-- Floating clutter particles -->
+  <rect x="10" y="40" width="8" height="10" rx="1" fill="rgba(255,255,255,0.12)" transform="rotate(18 10 40)"/>
+  <circle cx="185" cy="110" r="5" fill="rgba(255,200,50,0.15)"/>
+  <rect x="170" y="180" width="10" height="8" rx="1" fill="rgba(255,255,255,0.08)" transform="rotate(-25 170 180)"/>
+</svg>
+{% endmacro %}

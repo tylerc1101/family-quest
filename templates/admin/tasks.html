@@ -1,0 +1,142 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Tasks{% endblock %}
+{% block page_title %}📋 Today's Tasks{% endblock %}
+
+{% set admin_page = 'tasks' %}
+
+{% block admin_content %}
+
+{# ── Controls ── #}
+<div class="task-controls">
+  <div class="task-date-info">
+    <strong>{{ today }}</strong>
+    <span class="muted">{{ tasks | length }} task(s) on record</span>
+  </div>
+  <div class="task-actions">
+    {% if not tasks %}
+      <form method="POST" action="/admin/tasks/generate">
+        <button class="btn btn-primary">🎲 Generate Today's Tasks</button>
+      </form>
+    {% else %}
+      <form method="POST" action="/admin/tasks/generate"
+            onsubmit="return confirm('Regenerate tasks? This will delete all current tasks for today.')">
+        <button class="btn btn-ghost">🔄 Regenerate</button>
+      </form>
+    {% endif %}
+    <form method="POST" action="/admin/tasks/approve-all"
+          onsubmit="return confirm('Approve ALL completed tasks?')">
+      <button class="btn btn-success">✅ Approve All</button>
+    </form>
+  </div>
+</div>
+
+{# ── Task Table ── #}
+{% if tasks %}
+  <section class="admin-section">
+    <table class="admin-table tasks-table">
+      <thead>
+        <tr>
+          <th>Hero</th>
+          <th>Task</th>
+          <th>Difficulty</th>
+          <th>XP</th>
+          <th>🪙</th>
+          <th>Boss ⚔️</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks %}
+          <tr class="task-row-{{ task.state }}">
+            <td>
+              <span class="table-hero-name" style="color:{{ task.hero_color }}">
+                {{ task.hero_name }}
+              </span>
+            </td>
+            <td>
+              <span class="task-name-cell">{{ task.title }}</span>
+              {% if task.description %}
+                <span class="task-desc-cell muted">{{ task.description }}</span>
+              {% endif %}
+            </td>
+            <td><span class="badge badge-{{ task.difficulty }}">{{ task.difficulty | title }}</span></td>
+            <td>{{ task.xp_reward }}</td>
+            <td>{{ task.coin_reward }}</td>
+            <td>{{ task.boss_damage }}</td>
+            <td>
+              {% if task.state == 'pending' %}
+                <span class="badge badge-pending">Pending</span>
+              {% elif task.state == 'completed' %}
+                <span class="badge badge-completed">⏳ Review</span>
+              {% elif task.state == 'approved' %}
+                <span class="badge badge-approved">✅ Approved</span>
+              {% elif task.state == 'missed' %}
+                <span class="badge badge-missed">❌ Missed</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="action-row">
+                {% if task.state == 'completed' %}
+                  <form method="POST" action="/admin/tasks/{{ task.id }}/approve" style="display:inline">
+                    <button class="btn btn-success btn-sm">✅</button>
+                  </form>
+                  <form method="POST" action="/admin/tasks/{{ task.id }}/reject" style="display:inline">
+                    <button class="btn btn-danger btn-sm">❌</button>
+                  </form>
+                {% elif task.state == 'pending' %}
+                  <form method="POST" action="/admin/tasks/{{ task.id }}/approve" style="display:inline"
+                        onsubmit="return confirm('Force-approve this task without hero confirmation?')">
+                    <button class="btn btn-ghost btn-sm">Force ✅</button>
+                  </form>
+                {% else %}
+                  <span class="muted">—</span>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+{% else %}
+  <div class="empty-state large">
+    <p>📋 No tasks for today yet.</p>
+    <p>Click <strong>Generate Today's Tasks</strong> to create them from your active templates.</p>
+  </div>
+{% endif %}
+
+{# ── Add One-off Task ── #}
+<section class="admin-section">
+  <h2 class="section-title">➕ Add One-off Task</h2>
+  <p class="section-desc">Create a bonus task for today only — it won't repeat tomorrow.</p>
+  <form method="POST" action="/admin/tasks" class="admin-form admin-form-inline">
+    <div class="form-group">
+      <label for="hero_id">Hero</label>
+      <select name="hero_id" required>
+        <option value="">— select —</option>
+        {% for hero in heroes %}
+          <option value="{{ hero.id }}">{{ hero.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="task_name">Task Name</label>
+      <input type="text" name="name" placeholder="e.g. Extra cleanup" required maxlength="60">
+    </div>
+    <div class="form-group">
+      <label for="difficulty">Difficulty</label>
+      <select name="difficulty">
+        <option value="easy">Easy</option>
+        <option value="medium" selected>Medium</option>
+        <option value="hard">Hard</option>
+        <option value="epic">Epic</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Task</button>
+  </form>
+</section>
+
+{% endblock %}

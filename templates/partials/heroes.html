@@ -1,0 +1,81 @@
+{% from "macros/svgs.html" import hero_svg %}
+
+{% if not heroes %}
+  <div style="padding: 20px; color: var(--text-dim); font-size: 0.82rem; text-align: center;">
+    No heroes yet.<br>Visit <a href="/admin/heroes">Admin → Heroes</a> to add your party.
+  </div>
+{% endif %}
+
+{% for hero in heroes %}
+  {% set hp = hp_pct(hero) %}
+  {% set xpp = xp_progress_pct(hero) %}
+  {% set ko = hero.is_knocked_out %}
+  {% set tasks = tasks_by_hero.get(hero.id, []) %}
+
+<div class="hero-card {% if ko %}knocked-out{% endif %}" id="hero-{{ hero.id }}">
+  <div class="hero-card-accent" style="background: {{ hero.color }};"></div>
+
+  {# Header: portrait + name + class #}
+  <div class="hero-card-header">
+    <div class="hero-portrait">
+      {{ hero_svg(hero.class, hero.color, 52) }}
+    </div>
+    <div class="hero-info">
+      <div class="hero-name" style="color: {{ hero.color }};">{{ hero.name }}</div>
+      <div class="hero-meta">
+        <span class="hero-class-badge">{{ HERO_CLASSES[hero.class].emoji }} {{ HERO_CLASSES[hero.class].label }}</span>
+        <span class="hero-level">Lv {{ hero.level }}</span>
+        {% if ko %}
+          <span class="knocked-out-badge">💀 KO'd</span>
+        {% endif %}
+      </div>
+    </div>
+    {# Link to personal screen #}
+    <a href="/hero/{{ hero.id }}" class="btn btn-ghost btn-sm" style="flex-shrink:0;">Tasks</a>
+  </div>
+
+  {# Stats: HP, XP #}
+  <div class="hero-card-stats">
+    {# HP bar #}
+    <div class="stat-row">
+      <span class="stat-label">HP</span>
+      <div class="bar-track">
+        <div class="bar-fill {{ hp_color_class(hp) }}" style="width: {{ hp }}%;"></div>
+      </div>
+      <span class="stat-value">{{ hero.current_hp }}/{{ hero.max_hp }}</span>
+    </div>
+    {# XP bar #}
+    <div class="stat-row">
+      <span class="stat-label">XP</span>
+      <div class="bar-track">
+        <div class="bar-fill xp-bar" style="width: {{ xpp }}%;"></div>
+      </div>
+      <span class="stat-value">{{ xp_to_next_level(hero.level, hero.xp) }} to go</span>
+    </div>
+  </div>
+
+  {# Currency #}
+  <div class="hero-currency">
+    <span class="currency-chip coins">🪙 {{ hero.coins }}</span>
+    <span class="currency-chip xp">✨ {{ hero.xp }} XP</span>
+  </div>
+
+  {# Today's tasks (compact pill list) #}
+  {% if tasks %}
+  <div class="hero-tasks">
+    {% for task in tasks %}
+    <div class="task-pill state-{{ task.state }}">
+      <div class="task-dot"></div>
+      <span class="task-title">{{ task.title }}</span>
+      <span class="task-diff-badge diff-{{ task.difficulty }}">{{ task.difficulty[:1].upper() }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="padding: 4px 14px 10px; font-size: 0.72rem; color: var(--text-dim);">
+    No tasks today
+  </div>
+  {% endif %}
+
+</div>
+{% endfor %}

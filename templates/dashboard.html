@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% from "macros/svgs.html" import hero_svg, boss_svg %}
+
+{% block title %}Family Quest — Battle{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* Dashboard-only overrides */
+  body { overflow: hidden; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+
+  {# ── Header Bar ──────────────────────────────────────────────────────────── #}
+  <header class="dashboard-header">
+    <span class="game-title">⚔ Family Quest</span>
+
+    <div class="week-info">
+      {% if boss %}
+        <div style="color: var(--text-muted); font-size: 0.72rem;">Week Ends {{ boss.week_end }}</div>
+        {% if boss.is_defeated %}
+          <div style="color: var(--coin-color); font-weight: 700;">✨ BOSS DEFEATED — Awaiting next challenge!</div>
+        {% endif %}
+      {% else %}
+        <div style="color: var(--text-muted);">No boss active — visit Admin to spawn one</div>
+      {% endif %}
+    </div>
+
+    <div class="header-actions">
+      <a href="/admin" class="btn btn-ghost btn-sm">⚙ Admin</a>
+      <a href="/log" class="btn btn-ghost btn-sm">📜 Log</a>
+    </div>
+  </header>
+
+  {# ── Left: Hero Column ───────────────────────────────────────────────────── #}
+  <div
+    class="hero-column"
+    id="hero-column"
+    hx-get="/partials/heroes"
+    hx-trigger="every 30s"
+    hx-swap="innerHTML"
+  >
+    {% include "partials/heroes.html" %}
+  </div>
+
+  {# ── Center: Battle Arena ─────────────────────────────────────────────────── #}
+  <div
+    class="arena"
+    id="arena"
+    hx-get="/partials/boss"
+    hx-trigger="every 30s"
+    hx-swap="innerHTML"
+  >
+    {% include "partials/boss_scene.html" %}
+  </div>
+
+  {# ── Right: Event Feed ───────────────────────────────────────────────────── #}
+  <div class="event-column">
+    <div class="event-feed-header mb-4">
+      <h4>📜 Adventure Log</h4>
+      <a href="/log" class="text-xs text-muted">Full log →</a>
+    </div>
+    <div
+      id="event-feed"
+      hx-get="/partials/events"
+      hx-trigger="every 12s"
+      hx-swap="innerHTML"
+    >
+      {% include "partials/event_feed.html" %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

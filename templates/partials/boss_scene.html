@@ -1,0 +1,61 @@
+{% from "macros/svgs.html" import boss_svg %}
+
+{% if not boss %}
+  <div style="display:flex; align-items:center; justify-content:center; height:100%; flex-direction:column; gap:12px;">
+    <div style="font-size: 3rem; opacity: 0.2;">👾</div>
+    <div style="color: var(--text-dim); font-size: 0.9rem;">No boss active</div>
+    <a href="/admin/boss" class="btn btn-danger">Spawn Boss</a>
+  </div>
+
+{% else %}
+  {% set bp = hp_pct(boss) %}
+
+  {# ── Boss HP Bar (top of arena) ──────────────────────────────────────────── #}
+  <div class="boss-hp-bar-container">
+    <div class="boss-hp-label">
+      <span class="boss-name">
+        {% if boss.is_defeated %}💀{% else %}👾{% endif %}
+        {{ boss.name }}
+      </span>
+      <span class="boss-hp-numbers">{{ boss.current_hp | int }} / {{ boss.max_hp }} HP</span>
+    </div>
+    <div class="boss-hp-bar-track">
+      <div
+        class="boss-hp-bar-fill {% if bp <= 25 %}boss-critical{% endif %}"
+        style="width: {{ bp }}%;"
+        data-hp="{{ boss.current_hp }}"
+      ></div>
+    </div>
+    {% if boss.lore %}
+    <div style="font-size: 0.68rem; color: var(--text-dim); margin-top: 4px; font-style: italic;">
+      "{{ boss.lore }}"
+    </div>
+    {% endif %}
+  </div>
+
+  {# ── Boss Figure Scene ───────────────────────────────────────────────────── #}
+  <div class="boss-scene {% if boss.is_defeated %}boss-defeated{% endif %}">
+    <div class="arena-glow"></div>
+    <div class="arena-floor"></div>
+
+    <div class="boss-figure" style="filter: drop-shadow(0 0 30px {{ boss.color }}66);">
+      {{ boss_svg(boss.image_key, boss.color) }}
+      <div class="boss-shadow"></div>
+    </div>
+
+    {% if boss.is_defeated %}
+    <div class="boss-defeated-banner">
+      🎉 DEFEATED!<br>
+      <span style="font-size: 1rem; opacity: 0.8;">Family bonus awarded!</span>
+    </div>
+    {% endif %}
+
+    {% if not boss.is_defeated and bp <= 25 %}
+    {# Critical HP indicator #}
+    <div style="position:absolute; top: 12px; right: 12px; font-size: 0.72rem;
+                color: #ef4444; animation: hp-pulse 1s ease-in-out infinite;
+                font-weight: 700;">⚠ CRITICAL</div>
+    {% endif %}
+  </div>
+
+{% endif %}

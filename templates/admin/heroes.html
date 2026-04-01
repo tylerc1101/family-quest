@@ -1,0 +1,101 @@
+{% extends "admin/base_admin.html" %}
+{% from "macros/svgs.html" import hero_svg %}
+
+{% block admin_title %}Heroes{% endblock %}
+{% block page_title %}🧙 Hero Management{% endblock %}
+
+{% set admin_page = 'heroes' %}
+
+{% block admin_content %}
+
+<div class="admin-two-col">
+
+  {# ── Create Hero Form ── #}
+  <section class="admin-section">
+    <h2 class="section-title">➕ Create New Hero</h2>
+    <form method="POST" action="/admin/heroes" class="admin-form">
+
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" placeholder="e.g. Aria, Dad, Max" required maxlength="30">
+      </div>
+
+      <div class="form-group">
+        <label for="hero_class">Class</label>
+        <select id="hero_class" name="hero_class" required>
+          <option value="">— choose class —</option>
+          <option value="warrior">⚔️ Warrior — +25% boss damage</option>
+          <option value="mage">🔮 Mage — +30% XP bonus</option>
+          <option value="rogue">🗡️ Rogue — +50% coin bonus</option>
+          <option value="healer">💚 Healer — heals party 3 HP</option>
+          <option value="ranger">🏹 Ranger — 20% crit chance</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Color</label>
+        <div class="color-picker-wrap">
+          <input type="hidden" id="color" name="color" value="#6366f1">
+          <div class="color-swatches">
+            {% set colors = [
+              '#6366f1','#ec4899','#f59e0b','#10b981','#3b82f6',
+              '#ef4444','#8b5cf6','#14b8a6','#f97316','#84cc16'
+            ] %}
+            {% for c in colors %}
+              <div class="color-swatch {% if c == '#6366f1' %}selected{% endif %}"
+                   data-color="{{ c }}"
+                   style="background:{{ c }}"
+                   title="{{ c }}">
+              </div>
+            {% endfor %}
+          </div>
+          <div class="color-preview" id="color-preview" style="background:#6366f1"></div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">⚔️ Create Hero</button>
+    </form>
+  </section>
+
+  {# ── Hero List ── #}
+  <section class="admin-section">
+    <h2 class="section-title">Current Heroes</h2>
+    {% if heroes %}
+      <div class="hero-admin-list">
+        {% for hero in heroes %}
+          <div class="hero-admin-card {% if hero.is_ko %}hero-ko{% endif %}">
+            <div class="hero-admin-portrait">
+              {{ hero_svg(hero.hero_class, hero.color, 64) }}
+            </div>
+            <div class="hero-admin-info">
+              <div class="hero-admin-name">{{ hero.name }}</div>
+              <div class="hero-admin-meta">
+                <span class="badge badge-class">{{ hero.hero_class | title }}</span>
+                <span class="badge badge-level">Lv {{ hero.level }}</span>
+                {% if hero.is_ko %}<span class="badge badge-ko">KO'd</span>{% endif %}
+              </div>
+              <div class="hero-admin-stats">
+                <span>❤️ {{ hero.current_hp }}/{{ hero.max_hp }}</span>
+                <span>⭐ {{ hero.xp }} XP</span>
+                <span>🪙 {{ hero.coins }}</span>
+              </div>
+            </div>
+            <div class="hero-admin-actions">
+              <form method="POST" action="/admin/heroes/{{ hero.id }}/heal">
+                <button class="btn btn-ghost btn-sm">💊 Heal</button>
+              </form>
+              <form method="POST" action="/admin/heroes/{{ hero.id }}/delete"
+                    onsubmit="return confirm('Permanently delete {{ hero.name }}? This cannot be undone.')">
+                <button class="btn btn-danger btn-sm">🗑️ Delete</button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">No heroes yet — create one to begin the adventure!</div>
+    {% endif %}
+  </section>
+
+</div>
+{% endblock %}

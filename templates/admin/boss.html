@@ -1,0 +1,104 @@
+{% extends "admin/base_admin.html" %}
+{% from "macros/svgs.html" import boss_svg %}
+
+{% block admin_title %}Boss{% endblock %}
+{% block page_title %}👹 Boss Management{% endblock %}
+
+{% set admin_page = 'boss' %}
+
+{% block admin_content %}
+
+{# ── Current Boss ── #}
+<section class="admin-section">
+  <h2 class="section-title">Current Boss</h2>
+
+  {% if boss %}
+    <div class="boss-admin-card {% if boss.is_defeated %}boss-defeated{% endif %}">
+      <div class="boss-admin-portrait">
+        {{ boss_svg(boss.image_key, boss.color) }}
+      </div>
+      <div class="boss-admin-info">
+        <h3 class="boss-admin-name">{{ boss.name }}</h3>
+        <p class="boss-admin-lore">{{ boss.lore }}</p>
+
+        {% set hp_pct = ((boss.current_hp / boss.max_hp) * 100) | round(1) %}
+        <div class="stat-row">
+          <span class="stat-label">💀 HP</span>
+          <div class="bar-track">
+            <div class="bar-fill {% if hp_pct < 25 %}bar-danger hp-pulse{% elif hp_pct < 50 %}bar-warn{% else %}bar-boss{% endif %}"
+                 style="width:{{ hp_pct }}%"></div>
+          </div>
+          <span class="stat-value">{{ boss.current_hp }}/{{ boss.max_hp }}</span>
+        </div>
+
+        <div class="boss-meta-chips">
+          <span class="currency-chip">📅 Week {{ boss.week_number }}</span>
+          <span class="currency-chip">⚔️ {{ boss.max_hp - boss.current_hp }} total damage dealt</span>
+          {% if boss.is_defeated %}
+            <span class="badge badge-ko">☠️ Defeated!</span>
+          {% endif %}
+        </div>
+
+        {% if not boss.is_defeated %}
+          <form method="POST" action="/admin/boss/damage"
+                onsubmit="return confirm('Deal 50 test damage to the boss?')"
+                style="margin-top:1rem">
+            <button class="btn btn-danger btn-sm">🧪 Test Damage (50 HP)</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if boss.is_defeated %}
+      <div class="victory-banner">
+        🏆 Boss defeated! The family earns the bonus reward.
+        <form method="POST" action="/admin/boss/spawn" style="display:inline; margin-left:1rem">
+          <button class="btn btn-primary">Spawn Next Boss →</button>
+        </form>
+      </div>
+    {% endif %}
+
+  {% else %}
+    <div class="empty-state">
+      <p>No active boss. Spawn one to start the week's battle!</p>
+      <form method="POST" action="/admin/boss/spawn">
+        <button class="btn btn-primary">👹 Spawn Boss</button>
+      </form>
+    </div>
+  {% endif %}
+</section>
+
+{# ── Boss Roster Preview ── #}
+<section class="admin-section">
+  <h2 class="section-title">📖 Boss Roster</h2>
+  <p class="section-desc">Bosses rotate in order each week. Defeat them all for ultimate glory!</p>
+  <div class="boss-roster-grid">
+    {% for b in boss_roster %}
+      <div class="roster-card {% if boss and boss.name == b.name %}roster-active{% endif %}">
+        <div class="roster-portrait">
+          {{ boss_svg(b.image_key, b.color) }}
+        </div>
+        <div class="roster-info">
+          <span class="roster-name">{{ b.name }}</span>
+          <span class="roster-hp muted">{{ b.max_hp }} HP</span>
+          <span class="roster-lore muted">{{ b.lore }}</span>
+        </div>
+        {% if boss and boss.name == b.name %}
+          <span class="badge badge-active roster-current-badge">Current</span>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{# ── Manual Spawn ── #}
+<section class="admin-section admin-section-danger">
+  <h2 class="section-title">⚙️ Force Spawn</h2>
+  <p>Spawns the next boss in rotation immediately, replacing the current one. Use for testing or weekly resets.</p>
+  <form method="POST" action="/admin/boss/spawn"
+        onsubmit="return confirm('Force-spawn next boss? Current boss progress will be archived.')">
+    <button class="btn btn-danger">👹 Force Spawn Next Boss</button>
+  </form>
+</section>
+
+{% endblock %}

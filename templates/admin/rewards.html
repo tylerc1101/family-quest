@@ -1,0 +1,164 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Rewards{% endblock %}
+{% block page_title %}🎁 Reward Catalog{% endblock %}
+
+{% set admin_page = 'rewards' %}
+
+{% block admin_content %}
+
+<div class="admin-two-col">
+
+  {# ── Create Reward ── #}
+  <section class="admin-section">
+    <h2 class="section-title">➕ New Reward</h2>
+    <p class="section-desc">Define rewards heroes can claim with their earned coins, or family bonuses for boss defeats.</p>
+
+    <form method="POST" action="/admin/rewards" class="admin-form">
+
+      <div class="form-group">
+        <label for="name">Reward Name</label>
+        <input type="text" id="name" name="name" placeholder="e.g. Movie night, Extra screen time" required maxlength="60">
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" id="description" name="description" placeholder="What do they get?" maxlength="120">
+      </div>
+
+      <div class="form-group">
+        <label for="cost_coins">Cost (coins)</label>
+        <input type="number" id="cost_coins" name="cost_coins" value="50" min="0" max="9999">
+        <span class="field-hint">Set to 0 for boss-defeat-only rewards</span>
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" name="is_family_reward" value="1">
+          Family reward (awarded on boss defeat, free for all)
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" name="is_active" value="1" checked>
+          Active
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-primary">🎁 Create Reward</button>
+    </form>
+  </section>
+
+  {# ── Reward List ── #}
+  <section class="admin-section">
+    <h2 class="section-title">Catalog</h2>
+
+    {% if rewards %}
+      {# Family rewards first #}
+      {% set family_rewards = rewards | selectattr('is_family_reward', 'eq', true) | list %}
+      {% set personal_rewards = rewards | rejectattr('is_family_reward', 'eq', true) | list %}
+
+      {% if family_rewards %}
+        <h3 class="reward-group-label">🏆 Family Boss Rewards</h3>
+        <div class="reward-list">
+          {% for reward in family_rewards %}
+            <div class="reward-card {% if not reward.is_active %}reward-inactive{% endif %}">
+              <div class="reward-icon">🏆</div>
+              <div class="reward-info">
+                <span class="reward-name">{{ reward.name }}</span>
+                {% if reward.description %}
+                  <span class="reward-desc muted">{{ reward.description }}</span>
+                {% endif %}
+                <span class="badge badge-family">Boss Reward</span>
+              </div>
+              <div class="reward-actions">
+                <form method="POST" action="/admin/rewards/{{ reward.id }}/toggle">
+                  <button class="btn btn-ghost btn-sm">
+                    {% if reward.is_active %}⏸{% else %}▶️{% endif %}
+                  </button>
+                </form>
+                <form method="POST" action="/admin/rewards/{{ reward.id }}/delete"
+                      onsubmit="return confirm('Delete this reward?')">
+                  <button class="btn btn-danger btn-sm">🗑️</button>
+                </form>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if personal_rewards %}
+        <h3 class="reward-group-label">🪙 Personal Rewards</h3>
+        <div class="reward-list">
+          {% for reward in personal_rewards %}
+            <div class="reward-card {% if not reward.is_active %}reward-inactive{% endif %}">
+              <div class="reward-icon">🎁</div>
+              <div class="reward-info">
+                <span class="reward-name">{{ reward.name }}</span>
+                {% if reward.description %}
+                  <span class="reward-desc muted">{{ reward.description }}</span>
+                {% endif %}
+                <div class="reward-meta">
+                  <span class="currency-chip">🪙 {{ reward.cost_coins }} coins</span>
+                  {% if not reward.is_active %}
+                    <span class="badge badge-inactive">Inactive</span>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="reward-actions">
+                <form method="POST" action="/admin/rewards/{{ reward.id }}/toggle">
+                  <button class="btn btn-ghost btn-sm">
+                    {% if reward.is_active %}⏸{% else %}▶️{% endif %}
+                  </button>
+                </form>
+                <form method="POST" action="/admin/rewards/{{ reward.id }}/delete"
+                      onsubmit="return confirm('Delete this reward?')">
+                  <button class="btn btn-danger btn-sm">🗑️</button>
+                </form>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+    {% else %}
+      <div class="empty-state">No rewards defined yet. Create some incentives!</div>
+    {% endif %}
+  </section>
+
+</div>
+
+{# ── Claim History ── #}
+{% if claim_history %}
+  <section class="admin-section">
+    <h2 class="section-title">📋 Recent Claims</h2>
+    <table class="admin-table">
+      <thead>
+        <tr><th>Hero</th><th>Reward</th><th>Cost</th><th>Claimed At</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        {% for claim in claim_history %}
+          <tr>
+            <td>{{ claim.hero_name }}</td>
+            <td>{{ claim.reward_name }}</td>
+            <td>🪙 {{ claim.cost_coins }}</td>
+            <td class="muted">{{ claim.claimed_at }}</td>
+            <td>
+              {% if claim.is_fulfilled %}
+                <span class="badge badge-approved">Fulfilled</span>
+              {% else %}
+                <span class="badge badge-pending">Pending</span>
+                <form method="POST" action="/admin/rewards/claims/{{ claim.id }}/fulfill" style="display:inline">
+                  <button class="btn btn-success btn-sm">✅ Fulfill</button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% endif %}
+
+{% endblock %}

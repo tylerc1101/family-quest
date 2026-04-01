@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}{% block admin_title %}Admin{% endblock %} — Family Quest{% endblock %}
+
+{% block body_class %}admin-layout{% endblock %}
+
+{% block content %}
+<div class="admin-wrap">
+
+  {# ── Sidebar ── #}
+  <nav class="admin-sidebar">
+    <div class="sidebar-brand">
+      <a href="/">⚔️ Family Quest</a>
+    </div>
+    <div class="sidebar-section-label">Management</div>
+    <a href="/admin"           class="sidebar-link {% if admin_page == 'overview'   %}active{% endif %}">🏠 Overview</a>
+    <a href="/admin/heroes"    class="sidebar-link {% if admin_page == 'heroes'     %}active{% endif %}">🧙 Heroes</a>
+    <a href="/admin/tasks"     class="sidebar-link {% if admin_page == 'tasks'      %}active{% endif %}">📋 Tasks</a>
+    <a href="/admin/templates" class="sidebar-link {% if admin_page == 'templates'  %}active{% endif %}">📝 Templates</a>
+    <a href="/admin/boss"      class="sidebar-link {% if admin_page == 'boss'       %}active{% endif %}">👹 Boss</a>
+    <a href="/admin/rewards"   class="sidebar-link {% if admin_page == 'rewards'    %}active{% endif %}">🎁 Rewards</a>
+    <div class="sidebar-section-label">Game</div>
+    <a href="/"   class="sidebar-link">🖥️ War Room</a>
+    <a href="/log" class="sidebar-link">📜 Adventure Log</a>
+  </nav>
+
+  {# ── Main content ── #}
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <h1 class="admin-title">{% block page_title %}Admin{% endblock %}</h1>
+    </div>
+
+    {% if msg %}
+      <div class="flash flash-{{ flash_type | default('success') }}">{{ msg }}</div>
+    {% endif %}
+
+    {% block admin_content %}{% endblock %}
+  </main>
+
+</div>
+{% endblock %}

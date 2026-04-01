@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Adventure Log — Family Quest{% endblock %}
+
+{% block body_class %}log-page{% endblock %}
+
+{% block content %}
+<div class="log-wrap">
+  <header class="log-header">
+    <a href="/" class="btn btn-ghost btn-sm">← Back to War Room</a>
+    <h1>📜 Adventure Log</h1>
+    <p class="log-subtitle">A chronicle of the family's heroic deeds.</p>
+  </header>
+
+  <div class="log-filters">
+    <a href="/log" class="btn {% if not active_filter %}btn-primary{% else %}btn-ghost{% endif %}">All</a>
+    <a href="/log?type=task_approved"  class="btn {% if active_filter == 'task_approved'  %}btn-primary{% else %}btn-ghost{% endif %}">⚔️ Approved</a>
+    <a href="/log?type=task_missed"    class="btn {% if active_filter == 'task_missed'    %}btn-primary{% else %}btn-ghost{% endif %}">💀 Missed</a>
+    <a href="/log?type=level_up"       class="btn {% if active_filter == 'level_up'       %}btn-primary{% else %}btn-ghost{% endif %}">⭐ Level Ups</a>
+    <a href="/log?type=boss_defeated"  class="btn {% if active_filter == 'boss_defeated'  %}btn-primary{% else %}btn-ghost{% endif %}">🏆 Boss Kills</a>
+    <a href="/log?type=hero_ko"        class="btn {% if active_filter == 'hero_ko'        %}btn-primary{% else %}btn-ghost{% endif %}">😵 KOs</a>
+  </div>
+
+  <div class="log-list">
+    {% if events %}
+      {% for ev in events %}
+        <div class="log-entry event-{{ ev.event_type }}">
+          <div class="log-icon">
+            {% if ev.event_type == 'task_approved'  %}⚔️
+            {% elif ev.event_type == 'task_completed' %}📋
+            {% elif ev.event_type == 'task_missed'  %}💀
+            {% elif ev.event_type == 'level_up'     %}⭐
+            {% elif ev.event_type == 'boss_damaged' %}💥
+            {% elif ev.event_type == 'boss_defeated'%}🏆
+            {% elif ev.event_type == 'hero_ko'      %}😵
+            {% elif ev.event_type == 'hero_recovered'%}💊
+            {% elif ev.event_type == 'reward_claimed'%}🎁
+            {% elif ev.event_type == 'party_heal'   %}✨
+            {% elif ev.event_type == 'crit'         %}💢
+            {% else %}📜
+            {% endif %}
+          </div>
+          <div class="log-body">
+            <span class="log-message">{{ ev.message }}</span>
+            <span class="log-time" data-timestamp="{{ ev.created_at }}">{{ ev.created_at }}</span>
+          </div>
+        </div>
+      {% endfor %}
+
+      {% if page > 1 or has_next %}
+        <div class="log-pagination">
+          {% if page > 1 %}
+            <a href="/log?page={{ page - 1 }}{% if active_filter %}&type={{ active_filter }}{% endif %}" class="btn btn-ghost">← Older</a>
+          {% endif %}
+          {% if has_next %}
+            <a href="/log?page={{ page + 1 }}{% if active_filter %}&type={{ active_filter }}{% endif %}" class="btn btn-ghost">Newer →</a>
+          {% endif %}
+        </div>
+      {% endif %}
+
+    {% else %}
+      <div class="empty-state">
+        <p>📜 No events recorded yet. The adventure awaits!</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
