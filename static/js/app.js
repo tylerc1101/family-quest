@@ -47,6 +47,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ── HTMX Hooks ────────────────────────────────────────────────────────────────
 
+function triggerCharacterState(el, state, duration = 500) {
+  if (!el) return;
+  const originalState = el.dataset.characterState || 'idle';
+  el.dataset.characterState = state;
+  window.setTimeout(() => {
+    if (el.dataset.characterState === state) {
+      el.dataset.characterState = originalState === 'ko' ? 'ko' : 'idle';
+    }
+  }, duration);
+}
+
 // After the boss partial refreshes, check if HP dropped — show damage number
 let lastBossHp = null;
 
@@ -64,6 +75,17 @@ document.addEventListener('htmx:afterSettle', (evt) => {
         rect.left + rect.width / 2,
         rect.top + rect.height * 0.35
       );
+    }
+
+    // Hero attack + boss hit reaction sequence for modular actor layer
+    document.querySelectorAll('.js-war-hero[data-character-key="ranger"]').forEach((rangerEl) => {
+      if (rangerEl.dataset.characterState !== 'ko') {
+        triggerCharacterState(rangerEl, 'attack', 460);
+      }
+    });
+    const bossActor = document.querySelector('.js-boss-actor');
+    if (bossActor && bossActor.dataset.characterState !== 'ko') {
+      triggerCharacterState(bossActor, 'hit', 360);
     }
   }
   lastBossHp = currentHp;

@@ -1,0 +1,168 @@
+.character-actor {
+  --character-color: #60a5fa;
+  --character-size: 96px;
+  position: relative;
+  width: var(--character-size);
+  display: inline-flex;
+  justify-content: center;
+  align-items: flex-end;
+  transform-origin: 50% 100%;
+}
+
+.character-stage {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.character-art { position: relative; z-index: 2; }
+.character-svg { display: block; overflow: visible; }
+
+.character-shadow {
+  position: absolute;
+  bottom: 2px;
+  width: calc(var(--character-size) * .72);
+  height: calc(var(--character-size) * .15);
+  border-radius: 999px;
+  background: radial-gradient(ellipse, rgba(0,0,0,.45), transparent 72%);
+  filter: blur(3px);
+  z-index: 1;
+}
+
+.character-effects {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.fx { position: absolute; opacity: 0; }
+.fx-arrow {
+  left: 56%;
+  top: 46%;
+  width: calc(var(--character-size) * .45);
+  height: 2px;
+  background: linear-gradient(90deg, #e2e8f0, #f8fafc);
+}
+.fx-slash {
+  right: -10%;
+  top: 38%;
+  width: calc(var(--character-size) * .26);
+  height: calc(var(--character-size) * .26);
+  border: 3px solid rgba(248, 113, 113, .92);
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  transform: rotate(25deg);
+}
+.fx-spell {
+  left: 40%;
+  top: 25%;
+  width: calc(var(--character-size) * .18);
+  height: calc(var(--character-size) * .18);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(167,243,208,.95), transparent 68%);
+}
+.fx-impact {
+  right: -12%;
+  top: 40%;
+  width: calc(var(--character-size) * .34);
+  height: calc(var(--character-size) * .34);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(254,226,226,.85), rgba(239,68,68,.1) 60%, transparent 72%);
+}
+.fx-glow {
+  inset: auto 14% 2% 14%;
+  height: calc(var(--character-size) * .2);
+  border-radius: 999px;
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--character-color), #fff 30%), transparent 72%);
+}
+
+.character-actor[data-character-state="idle"] {
+  animation: character-idle 1.7s ease-in-out infinite;
+}
+.character-actor[data-character-state="idle"] .part-head {
+  transform-origin: 50% 75%;
+  animation: character-head-idle 1.7s ease-in-out infinite;
+}
+
+.character-actor[data-character-state="attack"] {
+  animation: character-attack-lunge .45s ease-out;
+}
+.character-actor[data-character-state="attack"] .part-weapon,
+.character-actor[data-character-state="attack"] .part-arm-front {
+  transform-origin: 36% 52%;
+  animation: character-weapon-swing .45s ease-out;
+}
+.character-actor[data-character-state="attack"] .fx-arrow {
+  opacity: 1;
+  animation: fx-arrow-flight .45s linear;
+}
+.character-actor[data-character-state="attack"] .fx-slash {
+  opacity: 1;
+  animation: fx-slash .36s ease-out;
+}
+
+.character-actor[data-character-state="hit"] {
+  animation: character-hit-shake .35s ease-out;
+}
+.character-actor[data-character-state="hit"] .fx-impact {
+  opacity: 1;
+  animation: fx-impact-burst .35s ease-out;
+}
+
+.character-actor[data-character-state="victory"] {
+  animation: character-victory .8s ease-in-out 2;
+}
+.character-actor[data-character-state="victory"] .fx-glow {
+  opacity: .9;
+  animation: fx-glow-pulse .8s ease-in-out 2;
+}
+
+.character-actor[data-character-state="ko"],
+.character-actor.is-ko {
+  filter: grayscale(.95) saturate(.7) brightness(.75);
+  transform: rotate(8deg) translateY(6px);
+}
+
+.character-actor--boss { --character-size: 180px; }
+
+@keyframes character-idle {
+  50% { transform: translateY(-2px); }
+}
+@keyframes character-head-idle {
+  50% { transform: translateY(-1px); }
+}
+@keyframes character-attack-lunge {
+  40% { transform: translateX(7px) translateY(-1px); }
+}
+@keyframes character-weapon-swing {
+  40% { transform: rotate(-16deg); }
+}
+@keyframes character-hit-shake {
+  20% { transform: translateX(-8px); }
+  55% { transform: translateX(6px); }
+  80% { transform: translateX(-3px); }
+}
+@keyframes character-victory {
+  40% { transform: translateY(-9px) scale(1.03); }
+}
+@keyframes fx-arrow-flight {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(130px); opacity: 0; }
+}
+@keyframes fx-slash {
+  from { transform: rotate(10deg) scale(.7); opacity: 0; }
+  40% { opacity: 1; }
+  to { transform: rotate(50deg) scale(1.1); opacity: 0; }
+}
+@keyframes fx-impact-burst {
+  from { transform: scale(.2); opacity: 0; }
+  40% { opacity: 1; }
+  to { transform: scale(1.2); opacity: 0; }
+}
+@keyframes fx-glow-pulse {
+  50% { transform: scale(1.15); opacity: 1; }
+}
