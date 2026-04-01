@@ -1,4 +1,4 @@
-{% from "macros/svgs.html" import hero_svg %}
+{% from "macros/characters.html" import character_actor %}
 
 {% if not heroes %}
   <div style="padding: 20px; color: var(--text-dim); font-size: 0.82rem; text-align: center;">
@@ -18,7 +18,7 @@
   {# Header: portrait + name + class #}
   <div class="hero-card-header">
     <div class="hero-portrait">
-      {{ hero_svg(hero.class, hero.color, 52) }}
+      {{ character_actor("hero", hero.class, hero.color, 52, "idle", hero.is_knocked_out) }}
     </div>
     <div class="hero-info">
       <div class="hero-name" style="color: {{ hero.color }};">{{ hero.name }}</div>

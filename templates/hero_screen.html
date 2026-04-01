@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "macros/svgs.html" import hero_svg %}
+{% from "macros/characters.html" import character_actor %}
 
 {% block title %}{{ hero.name }} — Character Sheet{% endblock %}
 {% block body_class %}hero-screen{% endblock %}
@@ -28,7 +28,7 @@
 
   <section class="hero-pane hero-pane--identity panel panel--glass">
     <div class="hero-sheet-portrait {% if hero.is_knocked_out %}is-ko{% endif %}">
-      {{ hero_svg(hero.hero_class, hero.color, 170) }}
+      {{ character_actor("hero", hero.hero_class, hero.color, 170, "idle", hero.is_knocked_out) }}
     </div>
     <h1>{{ hero.name }}</h1>
     <div class="hero-sheet-meta">

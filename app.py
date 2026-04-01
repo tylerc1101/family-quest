@@ -156,10 +156,14 @@ def hero_complete_task(hero_id: int, task_id: int):
             return _redir(f"/hero/{hero_id}")
         db.update_task_state(conn, task_id, "completed", "completed_at")
         hero = db.get_hero(conn, hero_id)
+        damage_result = game_logic.apply_task_boss_damage(conn, hero, task)
         db.log_event(conn, "task_completed",
-                     f"📋 {hero['name']} submitted '{task['title']}' — awaiting approval",
+                     f"📋 {hero['name']} submitted '{task['title']}' — awaiting approval.",
                      hero_id)
-    return _redir(f"/hero/{hero_id}?msg=Task+submitted+for+approval!")
+    msg = "Task+submitted+for+approval!"
+    if damage_result["applied"]:
+        msg = f"Task+submitted!+Boss+took+{damage_result['damage']}+damage!"
+    return _redir(f"/hero/{hero_id}?msg={msg}")
 
 
 # ── Admin — Overview ──────────────────────────────────────────────────────────

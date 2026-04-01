@@ -47,6 +47,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ── HTMX Hooks ────────────────────────────────────────────────────────────────
 
+function triggerCharacterState(el, state, duration = 500) {
+  if (!el) return;
+  const originalState = el.dataset.characterState || 'idle';
+  el.dataset.characterState = state;
+  window.setTimeout(() => {
+    if (el.dataset.characterState === state) {
+      el.dataset.characterState = originalState === 'ko' ? 'ko' : 'idle';
+    }
+  }, duration);
+}
+
+let combatLoopStarted = false;
+
+function startAmbientCombatLoop() {
+  if (combatLoopStarted) return;
+  combatLoopStarted = true;
+  let bossTurn = false;
+
+  window.setInterval(() => {
+    const bossActor = document.querySelector('.js-boss-actor');
+    const heroes = Array.from(document.querySelectorAll('.js-war-hero'))
+      .filter((heroEl) => heroEl.dataset.characterState !== 'ko');
+    if (!bossActor || bossActor.dataset.characterState === 'ko' || heroes.length === 0) return;
+
+    const randomHero = heroes[Math.floor(Math.random() * heroes.length)];
+    if (!randomHero) return;
+
+    if (bossTurn) {
+      triggerCharacterState(bossActor, 'attack', 420);
+      window.setTimeout(() => triggerCharacterState(randomHero, 'hit', 360), 170);
+    } else {
+      triggerCharacterState(randomHero, 'attack', 440);
+      window.setTimeout(() => triggerCharacterState(bossActor, 'hit', 350), 190);
+    }
+    bossTurn = !bossTurn;
+  }, 1600);
+}
+
 // After the boss partial refreshes, check if HP dropped — show damage number
 let lastBossHp = null;
 
@@ -65,9 +103,23 @@ document.addEventListener('htmx:afterSettle', (evt) => {
         rect.top + rect.height * 0.35
       );
     }
+
+    // Hero attack + boss hit reaction sequence for modular actor layer
+    document.querySelectorAll('.js-war-hero[data-character-key="ranger"]').forEach((rangerEl) => {
+      if (rangerEl.dataset.characterState !== 'ko') {
+        triggerCharacterState(rangerEl, 'attack', 460);
+      }
+    });
+    const bossActor = document.querySelector('.js-boss-actor');
+    if (bossActor && bossActor.dataset.characterState !== 'ko') {
+      triggerCharacterState(bossActor, 'hit', 360);
+    }
   }
   lastBossHp = currentHp;
 });
+
+document.addEventListener('DOMContentLoaded', startAmbientCombatLoop);
+document.addEventListener('htmx:afterSettle', startAmbientCombatLoop);
 
 // Flash hero card when it updates
 document.addEventListener('htmx:afterSettle', (evt) => {
