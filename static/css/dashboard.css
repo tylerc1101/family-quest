@@ -125,7 +125,7 @@
   justify-content: center;
   position: relative;
   overflow: hidden;
-  padding-bottom: 20px;
+  padding-bottom: 8px;
   background:
     radial-gradient(ellipse 70% 30% at 50% 100%, #1a0a0a44, transparent),
     radial-gradient(ellipse 100% 50% at 50% 80%, #0d0d0d, transparent);
@@ -159,13 +159,14 @@
   z-index: 2;
   animation: boss-float 4s ease-in-out infinite;
   cursor: default;
+  margin-bottom: 8px;
 }
 
 .boss-figure:hover { filter: brightness(1.1); }
 
 .boss-shadow {
-  width: 260px;
-  height: 40px;
+  width: 360px;
+  height: 56px;
   background: radial-gradient(ellipse, rgba(239,68,68,0.4), transparent 70%);
   border-radius: 50%;
   filter: blur(15px);
@@ -492,7 +493,10 @@
   background: rgba(255,255,255,0.08);
 }
 
-.boss-svg { width: 320px; height: 400px; }
+.boss-svg {
+  width: clamp(360px, 38vw, 560px);
+  height: clamp(500px, 70vh, 780px);
+}
 
 @keyframes hero-charge {
   0%, 100% { transform: translateX(0) translateY(0); }
