@@ -104,6 +104,46 @@ BOSS_ROSTER = [
         "lore": "The final form of household chaos. This one is personal.",
         "flavor_attack": "summons a wave of misplaced belongings!",
     },
+    {
+        "name": "Sir Tuck-a-Lot",
+        "image_key": "bed_bug_baron",
+        "max_hp": 950,
+        "color": "#7C3AED",
+        "lore": "A tiny tyrant who un-makes beds at midnight and hides in wrinkled sheets.",
+        "flavor_attack": "launches wrinkle swarms across the mattress!",
+    },
+    {
+        "name": "Sudzilla the Shower Spawn",
+        "image_key": "soap_sud_monster",
+        "max_hp": 1100,
+        "color": "#0EA5E9",
+        "lore": "Born from runaway bubbles and slippery tiles, it fears only a proper scrub.",
+        "flavor_attack": "unleashes a tidal wave of stinging soap foam!",
+    },
+    {
+        "name": "The Brainy Bookwalker",
+        "image_key": "brain_zombie",
+        "max_hp": 1250,
+        "color": "#22C55E",
+        "lore": "A page-hungry zombie that groans for books... and better reading habits.",
+        "flavor_attack": "flings overdue tomes with terrifying accuracy!",
+    },
+    {
+        "name": "Captain Cavity",
+        "image_key": "lord_clutter",
+        "max_hp": 900,
+        "color": "#F97316",
+        "lore": "A sugary corsair who raids toothbrushes and steals sparkling smiles.",
+        "flavor_attack": "fires a sticky candy cannon barrage!",
+    },
+    {
+        "name": "Sink Kraken",
+        "image_key": "dustmaw",
+        "max_hp": 1050,
+        "color": "#14B8A6",
+        "lore": "This dish-pile leviathan rises whenever plates are left to soak too long.",
+        "flavor_attack": "whips out tangled tentacles of soggy spaghetti!",
+    },
 ]
 
 # ── Hero Color Palette ─────────────────────────────────────────────────────────
