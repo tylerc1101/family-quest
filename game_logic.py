@@ -75,6 +75,32 @@ def calculate_boss_damage(hero, task) -> Dict[str, Any]:
     return {"damage": damage, "is_crit": is_crit}
 
 
+def apply_task_boss_damage(conn, hero, task) -> Dict[str, Any]:
+    """Apply boss damage immediately when a task is completed."""
+    boss = db.get_active_boss(conn)
+    if not boss:
+        return {"applied": False, "damage": 0, "boss_defeated": False, "is_crit": False}
+
+    dmg_result = calculate_boss_damage(hero, task)
+    boss_result = db.damage_boss(conn, boss["id"], dmg_result["damage"])
+
+    crit_str = " 💢 CRITICAL HIT!" if dmg_result["is_crit"] else ""
+    db.log_event(conn, "boss_damaged",
+                 f"⚔️ {hero['name']} dealt {dmg_result['damage']} damage to {boss['name']}!{crit_str}",
+                 hero["id"])
+
+    if boss_result["defeated"]:
+        db.log_event(conn, "boss_defeated",
+                     f"🏆 {boss['name']} has been defeated! The family earns {config.BOSS_DEFEAT_BONUS_COINS} coins!")
+
+    return {
+        "applied": True,
+        "damage": dmg_result["damage"],
+        "boss_defeated": boss_result["defeated"],
+        "is_crit": dmg_result["is_crit"],
+    }
+
+
 def calculate_xp_reward(hero, task) -> int:
     base = task["xp_reward"]
     passive = config.HERO_CLASSES.get(hero["hero_class"], {})
@@ -167,23 +193,6 @@ def approve_task(conn, task_id: int) -> Dict[str, Any]:
             db.log_event(conn, "party_heal",
                          f"💚 {hero['name']}'s healing aura restored {heal_amt} HP to the party!",
                          hero["id"])
-
-    # ── Boss damage ───────────────────────────────────────────────────────────
-    boss = db.get_active_boss(conn)
-    if boss:
-        dmg_result = calculate_boss_damage(hero, task)
-        boss_result = db.damage_boss(conn, boss["id"], dmg_result["damage"])
-
-        crit_str = " 💢 CRITICAL HIT!" if dmg_result["is_crit"] else ""
-        db.log_event(conn, "boss_damaged",
-                     f"⚔️ {hero['name']} dealt {dmg_result['damage']} damage to {boss['name']}!{crit_str}",
-                     hero["id"])
-
-        if boss_result["defeated"]:
-            db.log_event(conn, "boss_defeated",
-                         f"🏆 {boss['name']} has been defeated! The family earns {config.BOSS_DEFEAT_BONUS_COINS} coins!")
-        result["boss_damage"] = dmg_result["damage"]
-        result["boss_defeated"] = boss_result["defeated"]
 
     task_label = task["title"]
     ko_note = " (KO'd — rewards paused)" if hero["is_knocked_out"] else ""

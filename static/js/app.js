@@ -58,6 +58,33 @@ function triggerCharacterState(el, state, duration = 500) {
   }, duration);
 }
 
+let combatLoopStarted = false;
+
+function startAmbientCombatLoop() {
+  if (combatLoopStarted) return;
+  combatLoopStarted = true;
+  let bossTurn = false;
+
+  window.setInterval(() => {
+    const bossActor = document.querySelector('.js-boss-actor');
+    const heroes = Array.from(document.querySelectorAll('.js-war-hero'))
+      .filter((heroEl) => heroEl.dataset.characterState !== 'ko');
+    if (!bossActor || bossActor.dataset.characterState === 'ko' || heroes.length === 0) return;
+
+    const randomHero = heroes[Math.floor(Math.random() * heroes.length)];
+    if (!randomHero) return;
+
+    if (bossTurn) {
+      triggerCharacterState(bossActor, 'attack', 420);
+      window.setTimeout(() => triggerCharacterState(randomHero, 'hit', 360), 170);
+    } else {
+      triggerCharacterState(randomHero, 'attack', 440);
+      window.setTimeout(() => triggerCharacterState(bossActor, 'hit', 350), 190);
+    }
+    bossTurn = !bossTurn;
+  }, 1600);
+}
+
 // After the boss partial refreshes, check if HP dropped — show damage number
 let lastBossHp = null;
 
@@ -90,6 +117,9 @@ document.addEventListener('htmx:afterSettle', (evt) => {
   }
   lastBossHp = currentHp;
 });
+
+document.addEventListener('DOMContentLoaded', startAmbientCombatLoop);
+document.addEventListener('htmx:afterSettle', startAmbientCombatLoop);
 
 // Flash hero card when it updates
 document.addEventListener('htmx:afterSettle', (evt) => {

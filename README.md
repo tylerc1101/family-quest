@@ -56,7 +56,8 @@ python3 -m py_compile app.py game_logic.py db.py config.py
   - State is data-driven through `data-character-state` (`idle`, `attack`, `hit`, `ko`, `victory`).
   - Character effects are separate from art (`fx-arrow`, `fx-slash`, `fx-spell`, `fx-impact`, `fx-glow`).
 - `static/css/characters.css` contains reusable animation/state classes.
-- `static/js/app.js` triggers state changes during combat (example: ranger attack + boss hit reaction when boss HP drops).
+- `static/js/app.js` runs an ambient back-and-forth combat loop in the raid scene and also triggers extra attack/hit reactions when real boss HP drops.
+- Boss damage now applies when heroes complete tasks (`POST /hero/{hero_id}/task/{task_id}/complete`), while admin approval still controls reward payout.
 
 ### Adding a new animated character
 1. Add a layered macro in `templates/macros/characters.html` using grouped SVG parts:
