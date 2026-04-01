@@ -1,76 +1,108 @@
 {% extends "base.html" %}
-{% from "macros/svgs.html" import hero_svg, boss_svg %}
 
-{% block title %}Family Quest — Battle{% endblock %}
-
-{% block extra_head %}
-<style>
-  /* Dashboard-only overrides */
-  body { overflow: hidden; }
-</style>
-{% endblock %}
+{% block title %}Family Quest — Raid Board{% endblock %}
+{% block body_class %}dashboard-page{% endblock %}
 
 {% block content %}
-<div class="dashboard">
+{% set ns = namespace(total_tasks=0, completed_tasks=0, approved_tasks=0, total_coins=0) %}
+{% for hero in heroes %}
+  {% set ns.total_coins = ns.total_coins + hero.coins %}
+  {% for task in tasks_by_hero.get(hero.id, []) %}
+    {% set ns.total_tasks = ns.total_tasks + 1 %}
+    {% if task.state == 'completed' %}
+      {% set ns.completed_tasks = ns.completed_tasks + 1 %}
+    {% elif task.state == 'approved' %}
+      {% set ns.approved_tasks = ns.approved_tasks + 1 %}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+{% set done_today = ns.completed_tasks + ns.approved_tasks %}
+{% set daily_pct = ((done_today / ns.total_tasks) * 100) | round(0) if ns.total_tasks else 0 %}
 
-  {# ── Header Bar ──────────────────────────────────────────────────────────── #}
-  <header class="dashboard-header">
-    <span class="game-title">⚔ Family Quest</span>
-
-    <div class="week-info">
-      {% if boss %}
-        <div style="color: var(--text-muted); font-size: 0.72rem;">Week Ends {{ boss.week_end }}</div>
-        {% if boss.is_defeated %}
-          <div style="color: var(--coin-color); font-weight: 700;">✨ BOSS DEFEATED — Awaiting next challenge!</div>
-        {% endif %}
-      {% else %}
-        <div style="color: var(--text-muted);">No boss active — visit Admin to spawn one</div>
-      {% endif %}
+<div class="dashboard dashboard--raid">
+  <header class="dashboard-topbar panel panel--glass">
+    <div class="topbar-brand">
+      <p class="game-title">⚔️ Family Quest</p>
+      <p class="topbar-subtitle">Co-op raid board</p>
     </div>
 
-    <div class="header-actions">
-      <a href="/admin" class="btn btn-ghost btn-sm">⚙ Admin</a>
-      <a href="/log" class="btn btn-ghost btn-sm">📜 Log</a>
+    <div class="topbar-stats">
+      <div class="metric-chip">
+        <span class="metric-chip__label">Party</span>
+        <strong>{{ heroes|length }} Heroes</strong>
+      </div>
+      <div class="metric-chip metric-chip--coin">
+        <span class="metric-chip__label">Coins</span>
+        <strong>{{ ns.total_coins }}</strong>
+      </div>
+      <div class="metric-chip metric-chip--quest">
+        <span class="metric-chip__label">Daily Quests</span>
+        <strong>{{ done_today }}/{{ ns.total_tasks or 0 }}</strong>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <a href="/log" class="btn btn-secondary btn-lg">📜 Quest Log</a>
+      <a href="/admin" class="btn btn-ghost btn-lg">⚙️ Admin</a>
     </div>
   </header>
 
-  {# ── Left: Hero Column ───────────────────────────────────────────────────── #}
-  <div
-    class="hero-column"
+  <aside class="dashboard-rail dashboard-rail--left panel panel--soft"
     id="hero-column"
     hx-get="/partials/heroes"
     hx-trigger="every 30s"
-    hx-swap="innerHTML"
-  >
+    hx-swap="innerHTML">
+    <div class="section-heading">
+      <h2>🧙 Party Roster</h2>
+      <span>{{ heroes|length }} online</span>
+    </div>
     {% include "partials/heroes.html" %}
-  </div>
+  </aside>
 
-  {# ── Center: Battle Arena ─────────────────────────────────────────────────── #}
-  <div
-    class="arena"
+  <main class="arena arena--raid panel panel--glass"
     id="arena"
     hx-get="/partials/boss"
     hx-trigger="every 30s"
-    hx-swap="innerHTML"
-  >
-    {% include "partials/boss_scene.html" %}
-  </div>
-
-  {# ── Right: Event Feed ───────────────────────────────────────────────────── #}
-  <div class="event-column">
-    <div class="event-feed-header mb-4">
-      <h4>📜 Adventure Log</h4>
-      <a href="/log" class="text-xs text-muted">Full log →</a>
+    hx-swap="innerHTML">
+    <div class="arena-banner">
+      <div>
+        <p class="arena-banner__kicker">RAID BOSS</p>
+        <h1>{{ boss.name if boss else 'No boss spawned' }}</h1>
+      </div>
+      <div class="arena-status {{ 'is-defeated' if boss and boss.is_defeated else 'is-live' }}">
+        {% if boss %}
+          {{ 'Defeated ✅' if boss.is_defeated else 'Enraged 🔥' }}
+        {% else %}
+          Waiting…
+        {% endif %}
+      </div>
     </div>
-    <div
-      id="event-feed"
+
+    <div class="party-progress">
+      <div class="inline-bar">
+        <span class="bar-label">Daily Progress</span>
+        <div class="bar-track">
+          <div class="bar-fill bar-xp" style="width: {{ daily_pct }}%"></div>
+        </div>
+        <span class="bar-label">{{ daily_pct }}%</span>
+      </div>
+    </div>
+
+    {% include "partials/boss_scene.html" %}
+  </main>
+
+  <aside class="dashboard-rail dashboard-rail--right panel panel--soft">
+    <div class="section-heading">
+      <h2>📜 Quest Log</h2>
+      <a href="/log">Full log →</a>
+    </div>
+
+    <div id="event-feed" class="quest-log-feed"
       hx-get="/partials/events"
       hx-trigger="every 12s"
-      hx-swap="innerHTML"
-    >
+      hx-swap="innerHTML">
       {% include "partials/event_feed.html" %}
     </div>
-  </div>
-
+  </aside>
 </div>
 {% endblock %}
