@@ -121,7 +121,8 @@ def partial_heroes(request: Request):
 def partial_boss(request: Request):
     with db.get_db() as conn:
         boss = db.get_active_boss(conn) or db.get_latest_boss(conn)
-    return _render(request, "partials/boss_scene.html", {"boss": boss})
+        heroes = db.get_all_heroes(conn)
+    return _render(request, "partials/boss_scene.html", {"boss": boss, "heroes": heroes})
 
 
 @app.get("/partials/events", response_class=HTMLResponse)

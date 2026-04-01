@@ -1,4 +1,4 @@
-{% from "macros/svgs.html" import boss_svg %}
+{% from "macros/svgs.html" import boss_svg, hero_svg %}
 
 {% if not boss %}
   <div style="display:flex; align-items:center; justify-content:center; height:100%; flex-direction:column; gap:12px;">
@@ -55,6 +55,19 @@
     <div style="position:absolute; top: 12px; right: 12px; font-size: 0.72rem;
                 color: #ef4444; animation: hp-pulse 1s ease-in-out infinite;
                 font-weight: 700;">⚠ CRITICAL</div>
+    {% endif %}
+
+    {% if heroes %}
+    <div class="war-heroes" aria-label="Heroes in the war room">
+      {% for hero in heroes %}
+      <div class="war-hero {% if hero.is_knocked_out %}is-ko{% endif %}">
+        <div class="war-hero-sprite" style="--hero-color: {{ hero.color }};">
+          {{ hero_svg(hero.class, hero.color, 64) }}
+        </div>
+        <div class="war-hero-name">{{ hero.name }}</div>
+      </div>
+      {% endfor %}
+    </div>
     {% endif %}
   </div>
 
