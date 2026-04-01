@@ -1,4 +1,4 @@
-{% from "macros/svgs.html" import boss_svg, hero_svg %}
+{% from "macros/characters.html" import character_actor %}
 
 {% if not boss %}
   <div style="display:flex; align-items:center; justify-content:center; height:100%; flex-direction:column; gap:12px;">
@@ -39,7 +39,7 @@
     <div class="arena-floor"></div>
 
     <div class="boss-figure" style="filter: drop-shadow(0 0 30px {{ boss.color }}66);">
-      {{ boss_svg(boss.image_key, boss.color) }}
+      {{ character_actor("boss", boss.image_key, boss.color, 180, "idle", boss.is_defeated, "js-boss-actor") }}
       <div class="boss-shadow"></div>
     </div>
 
@@ -62,7 +62,7 @@
       {% for hero in heroes %}
       <div class="war-hero {% if hero.is_knocked_out %}is-ko{% endif %}">
         <div class="war-hero-sprite" style="--hero-color: {{ hero.color }};">
-          {{ hero_svg(hero.class, hero.color, 64) }}
+          {{ character_actor("hero", hero.class, hero.color, 68, "idle", hero.is_knocked_out, "js-war-hero") }}
         </div>
         <div class="war-hero-name">{{ hero.name }}</div>
       </div>

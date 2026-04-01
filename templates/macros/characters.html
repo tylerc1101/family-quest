@@ -1,0 +1,92 @@
+{% from "macros/svgs.html" import hero_svg, boss_svg %}
+
+{% macro character_actor(kind, key, color, size=96, state="idle", ko=False, extra_classes="") %}
+<div
+  class="character-actor character-actor--{{ kind }} {{ extra_classes }}{% if ko %} is-ko{% endif %}"
+  data-character-kind="{{ kind }}"
+  data-character-key="{{ key }}"
+  data-character-state="{{ 'ko' if ko else state }}"
+  style="--character-color: {{ color }}; --character-size: {{ size }}px;"
+>
+  <div class="character-stage">
+    <div class="character-shadow"></div>
+    <div class="character-art">
+      {% if kind == "hero" and key == "ranger" %}
+        {{ _ranger_modular(color, size) }}
+      {% elif kind == "boss" and key == "lord_clutter" %}
+        {{ _boss_modular(color, size) }}
+      {% elif kind == "hero" %}
+        {{ hero_svg(key, color, size) }}
+      {% else %}
+        {{ boss_svg(key, color) }}
+      {% endif %}
+    </div>
+    <div class="character-effects" aria-hidden="true">
+      <div class="fx fx-arrow"></div>
+      <div class="fx fx-slash"></div>
+      <div class="fx fx-spell"></div>
+      <div class="fx fx-impact"></div>
+      <div class="fx fx-glow"></div>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro _ranger_modular(c, size) %}
+<svg class="character-svg character-svg--ranger" width="{{ size }}" height="{{ (size * 1.35) | int }}" viewBox="0 0 120 160" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <g class="part part-legs">
+    <rect x="34" y="102" width="20" height="42" rx="8" fill="{{ c }}" opacity=".82"/>
+    <rect x="62" y="102" width="20" height="42" rx="8" fill="{{ c }}" opacity=".82"/>
+    <rect x="32" y="132" width="24" height="14" rx="5" fill="#3a2010"/>
+    <rect x="60" y="132" width="24" height="14" rx="5" fill="#3a2010"/>
+  </g>
+  <g class="part part-body">
+    <rect x="30" y="48" width="58" height="58" rx="12" fill="{{ c }}" opacity=".92"/>
+    <rect x="40" y="54" width="38" height="40" rx="8" fill="rgba(0,0,0,.2)"/>
+  </g>
+  <g class="part part-head">
+    <ellipse cx="60" cy="30" rx="20" ry="18" fill="{{ c }}" opacity=".95"/>
+    <path d="M38 34 Q41 16 60 14 Q79 16 82 34 Q75 27 60 27 Q45 27 38 34 Z" fill="rgba(0,0,0,.4)"/>
+  </g>
+  <g class="part part-arm-back">
+    <rect x="22" y="62" width="18" height="12" rx="6" fill="{{ c }}" opacity=".88"/>
+  </g>
+  <g class="part part-weapon">
+    <path d="M90 36 C108 42 108 88 90 96" stroke="#8a6030" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <line x1="90" y1="36" x2="90" y2="96" stroke="#e0d8c0" stroke-width="2"/>
+    <line x1="60" y1="66" x2="103" y2="66" stroke="#d0d8e8" stroke-width="3" stroke-linecap="round"/>
+    <polygon points="103,66 95,60 95,72" fill="#d0d8e8"/>
+  </g>
+  <g class="part part-arm-front">
+    <rect x="76" y="60" width="16" height="12" rx="6" fill="{{ c }}" opacity=".9"/>
+  </g>
+</svg>
+{% endmacro %}
+
+{% macro _boss_modular(c, size) %}
+<svg class="character-svg character-svg--boss" width="{{ size }}" height="{{ (size * 1.35) | int }}" viewBox="0 0 180 220" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <g class="part part-legs">
+    <rect x="46" y="146" width="34" height="52" rx="12" fill="{{ c }}" opacity=".88"/>
+    <rect x="98" y="146" width="34" height="52" rx="12" fill="{{ c }}" opacity=".88"/>
+  </g>
+  <g class="part part-body">
+    <rect x="34" y="68" width="110" height="92" rx="24" fill="{{ c }}"/>
+    <rect x="52" y="84" width="74" height="58" rx="15" fill="rgba(0,0,0,.2)"/>
+  </g>
+  <g class="part part-head">
+    <ellipse cx="88" cy="50" rx="34" ry="28" fill="{{ c }}" opacity=".95"/>
+    <circle cx="76" cy="52" r="5" fill="#fee2e2"/>
+    <circle cx="100" cy="52" r="5" fill="#fee2e2"/>
+  </g>
+  <g class="part part-arm-back">
+    <rect x="10" y="92" width="30" height="64" rx="14" fill="{{ c }}" opacity=".86"/>
+  </g>
+  <g class="part part-weapon">
+    <rect x="142" y="66" width="12" height="98" rx="6" fill="#7f1d1d"/>
+    <rect x="134" y="58" width="28" height="20" rx="8" fill="#fca5a5"/>
+  </g>
+  <g class="part part-arm-front">
+    <rect x="136" y="88" width="30" height="64" rx="14" fill="{{ c }}" opacity=".9"/>
+  </g>
+</svg>
+{% endmacro %}
